@@ -79,6 +79,21 @@
   }
   .theme-toggle:hover { border-color: var(--accent); transform: translateY(-2px); }
   .theme-toggle svg { width: 20px; height: 20px; fill: currentColor; }
+  .sound-toggle {
+    position: fixed; top: 14px; right: 62px; z-index: 60;
+    width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: .15s; font-size: 18px;
+  }
+  .sound-toggle:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; }
+  .badge {
+    display: flex; align-items: center; gap: 9px; padding: 8px 14px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--card2); font-size: 12px; color: var(--text);
+  }
+  .badge .bi { font-size: 22px; line-height: 1; }
+  .badge small { color: var(--muted); display: block; }
+  .badge.locked { opacity: .42; filter: grayscale(.85); }
 
   /* ---------- header ---------- */
   header { text-align: center; margin-bottom: 20px; }
@@ -380,6 +395,7 @@
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
+<button class="sound-toggle" id="soundToggle" title="Звук: вкл." aria-label="Звук">🔊</button>
 <button class="theme-toggle" id="themeToggle" title="Сменить тему" aria-label="Сменить тему">
   <svg id="iconSun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H13a1 1 0 0 0-1 1zm8 8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zm0 8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zM12 21a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H13a1 1 0 0 0-1 1zm8-8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zM3 4a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H4a1 1 0 0 0-1 1zm0 16a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H4a1 1 0 0 0-1 1zM4 12a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/></svg>
   <svg id="iconMoon" viewBox="0 0 24 24" class="hidden"><path d="M21.75 14.3A8.5 8.5 0 0 1 9.7 2.25 8.5 8.5 0 1 0 21.75 14.3z"/></svg>
@@ -414,9 +430,15 @@
       <div class="topics-wrap" id="topics"></div>
       <div class="toolbar">
         <button class="ai-btn" id="allTopicsBtn" title="Показать темы всех классов">📋 Все темы</button>
+        <button class="ai-btn" id="weakTopicBtn" title="Перейти к самой сложной теме класса">🎯 Сложная тема</button>
         <button class="ai-btn" id="explainTopicBtn">Объяснить тему (ИИ)</button>
         <button class="ai-btn" id="randomTopicBtn" title="Случайная тема">🎲 Случайная тема</button>
       </div>
+    </div>
+
+    <div class="card" id="achievCard">
+      <div class="card-title"><span class="dot"></span>Достижения <button class="btn btn-secondary" id="exportBtn" title="Скачать прогресс в формате JSON" style="margin-left:auto;padding:5px 12px;font-size:12px">Скачать прогресс</button></div>
+      <div class="badges" id="badgeRow"></div>
     </div>
 
     <div class="card hidden" id="trainerCard">
@@ -694,6 +716,43 @@
     }
     return arr;
   }
+
+  /* Короткие звуки на ответах (WebAudio, без файлов) */
+  var Sound = {
+    on: true, ctx: null,
+    init: function(){
+      try { Sound.on = localStorage.getItem("algSound") !== "0"; } catch(e){}
+      try { var AC = window.AudioContext || window.webkitAudioContext; if (AC) Sound.ctx = new AC(); } catch(e){}
+      var b = $("soundToggle");
+      if (b){ b.textContent = Sound.on ? "🔊" : "🔇"; b.title = Sound.on ? "Звук: вкл." : "Звук: выкл."; }
+    },
+    play: function(kind){
+      if (!Sound.on || !Sound.ctx) return;
+      try {
+        if (Sound.ctx.state === "suspended") Sound.ctx.resume();
+        var t = Sound.ctx.currentTime;
+        function tone(freq, start, dur){
+          var o = Sound.ctx.createOscillator(), g = Sound.ctx.createGain();
+          o.type = "sine"; o.frequency.setValueAtTime(freq, start);
+          g.gain.setValueAtTime(0, start);
+          g.gain.linearRampToValueAtTime(0.12, start + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+          o.connect(g); g.connect(Sound.ctx.destination);
+          o.start(start); o.stop(start + dur + 0.02);
+        }
+        if (kind === "ok"){ tone(660, t, 0.16); tone(880, t + 0.09, 0.22); }
+        else if (kind === "good"){ tone(523, t, 0.12); tone(659, t + 0.08, 0.14); tone(784, t + 0.16, 0.3); }
+        else { tone(196, t, 0.38); tone(156, t + 0.09, 0.25); }
+      } catch(e){}
+    },
+    toggle: function(){
+      Sound.on = !Sound.on;
+      try { localStorage.setItem("algSound", Sound.on ? "1" : "0"); } catch(e){}
+      $("soundToggle").textContent = Sound.on ? "🔊" : "🔇";
+      $("soundToggle").title = Sound.on ? "Звук: вкл." : "Звук: выкл.";
+      return Sound.on;
+    }
+  };
 
   /* Безопасный калькулятор выражений: + - * / ( ) ^ ** sqrt √ */
   function evaluate(expr){
@@ -1433,6 +1492,7 @@
     renderExamHistory();
     updateExamBest();
     buildSuggestions();
+    updateBadges();
     toast("Предмет: " + (s === "rus" ? "русский язык" : "алгебра"), "ok");
   }
   document.querySelectorAll("#subjectChips .chip").forEach(function(b){
@@ -1482,6 +1542,59 @@
     var pct = total ? Math.round(score.correct / total * 100) : 0;
     accuracyEl.textContent = pct + "%";
     progressBar.style.width = pct + "%";
+  }
+
+  /* ================= ДОСТИЖЕНИЯ ================= */
+  var BADGE_DEFS = [
+    { id: "first", icon: "🌟", name: "Первый шаг", desc: "Первый правильный ответ" },
+    { id: "streak10", icon: "🔥", name: "Серия 10", desc: "10 ответов подряд без ошибок" },
+    { id: "classAll", icon: "🏆", name: "Знаток класса", desc: "Правильный ответ в каждой теме класса" },
+    { id: "exam100", icon: "💯", name: "Идеальный тест", desc: "100% в итоговом тесте" },
+    { id: "marathon", icon: "🏅", name: "Марафонец", desc: "5 итоговых тестов" },
+    { id: "milestone", icon: "⭐", name: "1000 верных", desc: "1000 правильных ответов" }
+  ];
+  var badgesDone = {};
+  function loadBadges(){
+    var b = {}; try { b = JSON.parse(localStorage.getItem("algBadges") || "{}") || {}; } catch(e){}
+    badgesDone = b[subjectNow] || {};
+  }
+  function orderedKeys(map){
+    return Object.keys(map || {}).filter(function(k){ return k.indexOf(subjPrefix()) === 0; });
+  }
+  function subjPrefix(){ return subjectNow === "rus" ? "rus:" : ""; }
+  function earnBadge(id){
+    if (badgesDone[id]) return;
+    badgesDone[id] = true;
+    var all = {}; try { all = JSON.parse(localStorage.getItem("algBadges") || "{}") || {}; } catch(e){}
+    all[subjectNow] = badgesDone;
+    try { localStorage.setItem("algBadges", JSON.stringify(all)); } catch(e){}
+    var def = null;
+    BADGE_DEFS.forEach(function(d){ if (d.id === id) def = d; });
+    toast("Достижение: " + (def ? def.icon + " " + def.name : id), "ok");
+  }
+  function updateBadges(){
+    if (!$("badgeRow")) return;
+    loadBadges();
+    var prefix = subjPrefix();
+    var totalCorrect = 0, gradeAll = true;
+    var list = subjectDB()[curr.grade] || [];
+    list.forEach(function(t, i){
+      var s = scoreMap[prefix + curr.grade + ":" + i];
+      if (!s || !s.correct) gradeAll = false;
+    });
+    orderedKeys(scoreMap).forEach(function(k){ totalCorrect += (scoreMap[k].correct || 0); });
+    if (totalCorrect >= 1) earnBadge("first");
+    if (list.length && gradeAll) earnBadge("classAll");
+    if (totalCorrect >= 1000) earnBadge("milestone");
+    var hist = []; try { hist = JSON.parse(localStorage.getItem(examHistKey()) || "[]") || []; } catch(e){}
+    if (hist.length >= 5) earnBadge("marathon");
+    var row = $("badgeRow"); row.innerHTML = "";
+    BADGE_DEFS.forEach(function(d){
+      var got = !!badgesDone[d.id];
+      var b = el("div", "badge" + (got ? "" : " locked"), "<span class='bi'>" + (got ? d.icon : "🔒") + "</span><span>" + d.name + "<small>" + d.desc + "</small></span>");
+      b.title = (got ? "Открыто: " : "Закрыто: ") + d.desc;
+      row.appendChild(b);
+    });
   }
 
   function loadOptMode(){
@@ -1667,21 +1780,24 @@
     var correct = customMode ? matchCustom(value, expected) : isCorrect(value, expected);
     if (correct){
       score.correct++; score.streak++;
+      Sound.play("ok");
       var fb = "Верно!";
       if ([5, 10, 15, 20, 25, 50].indexOf(score.streak) >= 0) fb += " Серия " + score.streak + " — так держать!";
       feedbackEl.innerHTML = fb;
       feedbackEl.className = "feedback good";
     } else {
       score.wrong++; score.streak = 0;
+      Sound.play("bad");
       lastWrongUser = value;
       feedbackEl.innerHTML = "Неверно. Правильный ответ: <b>" + escapeHtml(expected) + "</b>";
       feedbackEl.className = "feedback bad";
       $("explainErrorWrap").classList.remove("hidden");
     }
+    if (score.streak >= 10) earnBadge("streak10");
     if (score.streak > (score.best || 0)) score.best = score.streak;
     answered = true;
     answerEl.disabled = true; $("checkBtn").disabled = true;
-    saveScore(); updateStats();
+    saveScore(); updateStats(); updateBadges();
   }
 
   function checkAnswer(){
@@ -2037,6 +2153,7 @@
   function renderAnswersMark(){
     var it = exam.items[exam.idx];
     var right = exam.answers[exam.idx] !== null && isCorrect(exam.answers[exam.idx], it.answer);
+    Sound.play(right ? "ok" : "bad");
     $("examFeedback").innerHTML = right ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>";
     $("examFeedback").className = "feedback " + (right ? "good" : "bad");
     if (exam.answers[exam.idx] !== null){
@@ -2063,6 +2180,7 @@
     exam.answers[exam.idx] = inp;
     $("examAnswer").disabled = true; $("examCheckBtn").disabled = true;
     var right = isCorrect(inp, it.answer);
+    Sound.play(right ? "ok" : "bad");
     $("examFeedback").innerHTML = right ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>";
     $("examFeedback").className = "feedback " + (right ? "good" : "bad");
     var dots = $("examDots").querySelectorAll(".dot");
@@ -2153,7 +2271,9 @@
     saveExamHistory(examGrade, pct, grade, correctCount, total);
     renderExamHistory();
     updateExamBest();
-    if (grade === 5) confetti();
+    if (grade === 5){ confetti(); Sound.play("good"); }
+    if (pct === 100) earnBadge("exam100");
+    updateBadges();
     setTimeout(function(){ $("examResultCard").scrollIntoView({ behavior: "smooth", block: "start" }); }, 100);
   }
 
@@ -2606,6 +2726,45 @@
     if (!list || !list.length){ toast("В этом классе нет тем", "err"); return; }
     selectTopic(ri(0, list.length - 1));
   });
+  $("weakTopicBtn").addEventListener("click", function(){
+    var list = subjectDB()[curr.grade];
+    if (!list || !list.length){ toast("В этом классе нет тем", "err"); return; }
+    var prefix = subjPrefix(), best = -1, bestIdx = 0, foundAny = false;
+    list.forEach(function(t, i){
+      var s = scoreMap[prefix + curr.grade + ":" + i];
+      if (!s || !s.total) return;
+      foundAny = true;
+      var rate = s.wrong / (s.correct + s.wrong);
+      var weight = rate + (s.total >= 5 ? 0.05 : 0);
+      if (weight > best){ best = weight; bestIdx = i; }
+    });
+    if (!foundAny){
+      toast("В этом классе пока нет тем с попытками — начните заниматься!", "warn");
+      return;
+    }
+    selectTopic(bestIdx);
+    toast("Самая сложная тема: «" + list[bestIdx].name + "»", "ok");
+  });
+  $("soundToggle").addEventListener("click", Sound.toggle);
+  $("exportBtn").addEventListener("click", exportProgress);
+
+  function exportProgress(){
+    var data = {
+      subject: subjectNow,
+      exportedAt: new Date().toLocaleString("ru-RU"),
+      scoreMap: scoreMap,
+      badges: badgesDone,
+      exams: (JSON.parse(localStorage.getItem(examHistKey()) || "[]") || []),
+      examsBySubject: { math: JSON.parse(localStorage.getItem("algExams") || "[]") || [], rus: JSON.parse(localStorage.getItem("algExamsRus") || "[]") || [] }
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (subjectNow === "rus" ? "progress-rus.json" : "progress-math.json");
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast("Прогресс скачан", "ok");
+  }
   ["aiBaseUrl","aiApiKey","aiModel"].forEach(function(id){
     $(id).addEventListener("input", function(){
       cfg.baseUrl = $("aiBaseUrl").value.trim();
@@ -2655,11 +2814,13 @@
   });
 
   /* ================= СТАРТ ================= */
+  Sound.init();
   buildTopics();
   generate();
   updateExamBadge();
   renderExamHistory();
   updateExamBest();
+  updateBadges();
 })();
 </script>
 </body>
