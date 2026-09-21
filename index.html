@@ -1,0 +1,2665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1120">
+<title>Тренажёр по алгебре и русскому языку — 1-11 класс</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --bg2: #111a31;
+    --card: #14203a;
+    --card2: #1b2a49;
+    --line: #25365a;
+    --accent: #4cc9f0;
+    --accent2: #7c6ff0;
+    --accent3: #2dd4bf;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --text: #e8eef9;
+    --muted: #93a5c4;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(4,10,25,.35);
+    --ring-track: #1b2a49;
+  }
+  [data-theme="light"] {
+    --bg: #eef2f9;
+    --bg2: #e3eaf6;
+    --card: #ffffff;
+    --card2: #eef2fa;
+    --line: #cbd6e9;
+    --accent: #0284c7;
+    --accent2: #6366f1;
+    --accent3: #0d9488;
+    --good: #16a34a;
+    --warn: #d97706;
+    --bad: #dc2626;
+    --text: #14213d;
+    --muted: #5c6b86;
+    --shadow: 0 10px 24px rgba(20,33,61,.10);
+    --ring-track: #dfe6f3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:
+      radial-gradient(1000px 500px at 85% -10%, rgba(124,111,240,.16), transparent 60%),
+      radial-gradient(900px 480px at -10% 10%, rgba(76,201,240,.12), transparent 60%),
+      linear-gradient(160deg, var(--bg), var(--bg2));
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background .3s, color .3s;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+  *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+  a { color: var(--accent); }
+  .hidden { display: none !important; }
+
+  .orb { position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; }
+  .orb-1 { width: 340px; height: 340px; left: -120px; top: -80px; background: var(--accent2); opacity: .5; }
+  .orb-2 { width: 300px; height: 300px; right: -100px; top: 30%; background: var(--accent); opacity: .35; animation: floatY 14s ease-in-out infinite; }
+  .orb-3 { width: 260px; height: 260px; left: 18%; bottom: -120px; background: var(--accent3); opacity: .22; animation: floatY 18s ease-in-out infinite reverse; }
+  @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-26px); } }
+
+  .wrap { max-width: 940px; margin: 0 auto; padding: 22px 16px 84px; position: relative; z-index: 1; }
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 60;
+    width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: .15s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .theme-toggle svg { width: 20px; height: 20px; fill: currentColor; }
+
+  /* ---------- header ---------- */
+  header { text-align: center; margin-bottom: 20px; }
+  header h1 {
+    font-size: 32px; letter-spacing: .5px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2) 55%, var(--accent3));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header p { color: var(--muted); margin-top: 6px; font-size: 14px; }
+
+  /* ---------- nav tabs ---------- */
+  .nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .nav-tab {
+    padding: 10px 22px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card); color: var(--muted); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: .18s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .nav-tab:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+  .nav-tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #081022; border-color: transparent; box-shadow: 0 8px 20px rgba(76,201,240,.25);
+  }
+  .badge {
+    background: var(--accent2); color: #fff; font-size: 11px; border-radius: 999px;
+    padding: 1px 8px; font-weight: 700;
+  }
+  .nav-tab.active .badge { background: rgba(8,16,34,.35); }
+
+  /* ---------- cards ---------- */
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+    animation: fadeIn .35s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .card-title {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 14px; font-weight: 700;
+  }
+  .card-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+  }
+
+  /* ---------- grade chips ---------- */
+  .chips { display: grid; gap: 8px; }
+  .chips.g11 { grid-template-columns: repeat(11, 1fr); }
+  .chips.g5 { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 820px){ .chips.g11 { grid-template-columns: repeat(6, 1fr); } .chips.g5 { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px){ .chips.g11 { grid-template-columns: repeat(4, 1fr); } }
+  .chip {
+    padding: 11px 4px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--card2); color: var(--text); cursor: pointer; text-align: center;
+    font-size: 14px; font-weight: 700; transition: .15s;
+  }
+  .chip small { display: block; font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: .3px; }
+  .chip:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .chip.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #081022; border-color: transparent; box-shadow: 0 6px 16px rgba(76,201,240,.25);
+  }
+  .chip.active small { color: rgba(8,16,34,.65); }
+
+  /* ---------- topics ---------- */
+  .topics-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .grade-sep { width: 100%; font-size: 12px; font-weight: 600; color: var(--accent2); text-transform: none; letter-spacing: 0; padding: 10px 0 2px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .grade-sep:first-child { border-top: none; margin-top: 0; }
+  .topic-btn {
+    padding: 9px 15px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card2); color: var(--text); cursor: pointer; font-size: 13px; transition: .15s;
+  }
+  .topic-btn:before { content: ""; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent3); margin-right:7px; vertical-align:middle; opacity:.7; }
+  .topic-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .topic-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #081022; border-color: transparent; font-weight: 600; }
+  .topic-btn.active:before { background: #081022; opacity:.6; }
+
+  /* ---------- stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 760px){ .stats { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 520px){ .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat { text-align: center; background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 6px; }
+  .stat .num { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .num.pop { animation: pop .5s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.28); } 100% { transform: scale(1); } }
+  .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ---------- problem ---------- */
+  .problem {
+    font-size: 30px; text-align: center; padding: 10px 0 4px;
+    letter-spacing: 1px; word-break: break-word; min-height: 70px; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .problem small { font-size: 15px; color: var(--muted); letter-spacing: 0; font-weight: 400; }
+  .topic-label {
+    text-align: center; font-size: 12px; color: var(--accent3); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 6px;
+  }
+  .progress-wrap { height: 8px; background: var(--card2); border-radius: 8px; overflow: hidden; margin: 6px 0 14px; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2) 60%, var(--accent3)); transition: width .4s; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .toggle-row input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+  /* ---------- answer ---------- */
+  .answer-center { max-width: 520px; margin: 0 auto; }
+  #answer {
+    width: 100%; padding: 13px 16px; font-size: 24px; text-align: center;
+    border-radius: 12px; border: 2px solid var(--line); background: var(--bg);
+    color: var(--text); outline: none; font-weight: 600; transition: border-color .15s, box-shadow .15s;
+  }
+  #answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(76,201,240,.18); }
+  .answer-row { display: flex; gap: 10px; margin-top: 12px; }
+  .answer-row input { flex: 1; }
+  .keypad { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .key, .key-exam {
+    min-width: 44px; height: 40px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card2); color: var(--text); font-size: 18px; font-weight: 600;
+    cursor: pointer; transition: .12s;
+  }
+  .key:hover, .key-exam:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .key:active, .key-exam:active { transform: scale(.94); }
+
+  button.btn {
+    padding: 12px 22px; font-size: 15px; border-radius: 12px; border: none;
+    cursor: pointer; font-weight: 700; transition: .15s;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #081022; }
+  .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn-secondary { background: var(--card2); color: var(--text); border: 1px solid var(--line); }
+  .btn-secondary:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px dashed var(--accent); }
+  .btn-ghost:hover { background: rgba(76,201,240,.1); }
+  button.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  .feedback { text-align: center; font-size: 16px; min-height: 26px; margin-top: 14px; font-weight: 700; transition:.2s; }
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+  .ai-btn {
+    padding: 9px 14px; font-size: 13px; border-radius: 10px; border: 1px solid var(--accent);
+    cursor: pointer; font-weight: 600; background: var(--card2); color: var(--accent); transition: .15s;
+  }
+  .ai-btn:hover { background: var(--accent); color: #081022; }
+  .ai-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ---------- options (exam + practice) ---------- */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  @media (max-width: 620px){ .options { grid-template-columns: 1fr; } }
+  .opt {
+    padding: 14px 18px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--card2); color: var(--text); font-size: 19px; font-weight: 600;
+    cursor: pointer; text-align: center; transition: .15s;
+  }
+  .opt:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .opt.chosen { border-color: var(--accent); background: rgba(76,201,240,.14); box-shadow: 0 0 0 3px rgba(76,201,240,.12); }
+  .opt.isCorrect { border-color: var(--good); background: rgba(52,211,153,.16); color: var(--good); }
+  .opt.isWrong { border-color: var(--bad); background: rgba(248,113,113,.16); color: var(--bad); }
+  .opt:disabled { cursor: default; transform: none; }
+  .opt-letter { font-size: 12px; opacity: .7; font-weight: 700; margin-right: 6px; }
+  .manual-link { margin-top: 12px; text-align: center; }
+
+  /* ---------- exam ---------- */
+  .exam-bar { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px; }
+  .exam-meta { font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+  .exam-meta b { color: var(--text); }
+  .dot-track { display: flex; gap: 6px; justify-content: center; margin: 8px 0 4px; flex-wrap: wrap; }
+  .dot-track .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--card2); border: 1px solid var(--line); transition: .15s; }
+  .dot-track .dot.cur { background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0 0 3px rgba(76,201,240,.2); }
+  .dot-track .dot.ok { background: var(--good); border-color: var(--good); }
+  .dot-track .dot.no { background: var(--bad); border-color: var(--bad); }
+  .exam-nav { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+
+  /* ---------- results ---------- */
+  .result-head { display: flex; gap: 26px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 6px 0 16px; }
+  .ring-wrap { position: relative; width: 140px; height: 140px; }
+  .ring-wrap svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+  #resRing { transition: stroke-dashoffset .9s ease; }
+  .ring-val {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; font-size: 30px; font-weight: 800;
+  }
+  .ring-val small { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .grade-big { font-size: 46px; font-weight: 900; background: linear-gradient(90deg, var(--warn), var(--accent3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grade-big.g5 { background: linear-gradient(90deg, var(--good), var(--accent3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grade-big.g2 { background: linear-gradient(90deg, var(--bad), var(--warn)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grade-cap { font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .grade-hint { list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .result-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+  .mini-stat { background: var(--card2); border:1px solid var(--line); border-radius: 12px; padding: 10px 18px; text-align: center; }
+  .mini-stat .n { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .mini-stat .l { font-size: 11px; color: var(--muted); }
+
+  .review { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+  .rev-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: var(--card2); border: 1px solid var(--line); font-size: 13px; line-height: 1.5; }
+  .rev-mark { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; margin-top:1px; }
+  .rev-mark.ok { background: rgba(52,211,153,.2); color: var(--good); }
+  .rev-mark.no { background: rgba(248,113,113,.2); color: var(--bad); }
+  .rev-topic { font-size: 11px; color: var(--accent3); font-weight: 700; text-transform: uppercase; letter-spacing:.5px; }
+  .rev-q { margin-top: 2px; }
+  .rev-a { margin-top: 2px; color: var(--muted); }
+  .rev-a b { color: var(--good); font-weight: 700; }
+
+  /* ---------- history ---------- */
+  .hist-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; background: var(--card2); border-radius: 10px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--line); }
+  .hist-score { font-weight: 800; }
+  .hist-score.g5 { color: var(--good); } .hist-score.g4 { color: var(--accent); } .hist-score.g3 { color: var(--warn); } .hist-score.g2 { color: var(--bad); }
+  .hist-del { cursor: pointer; color: var(--bad); background: none; border: none; font-size: 16px; font-weight: 800; }
+
+  /* ---------- upload ---------- */
+  .upload-area {
+    border: 2px dashed var(--line); border-radius: 12px; padding: 20px;
+    text-align: center; cursor: pointer; transition: .15s; color: var(--muted);
+  }
+  .upload-area:hover, .upload-area.drag { border-color: var(--accent); color: var(--accent); background: rgba(76,201,240,.06); }
+  .upload-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+  .upload-note code { background: var(--bg); padding: 2px 6px; border-radius: 6px; font-size: 11px; border: 1px solid var(--line); word-break: break-all; }
+  .task-list { margin-top: 14px; }
+  .task-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; background: var(--card2); border-radius: 10px; margin-bottom: 8px; font-size: 14px; border: 1px solid var(--line); }
+  .task-item .del { cursor: pointer; color: var(--bad); font-size: 16px; background: none; border: none; font-weight: 700; }
+  .back-to-normal { margin-top: 10px; width: 100%; }
+
+  /* ---------- AI chat ---------- */
+  .chat { display: flex; flex-direction: column; height: 420px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg); }
+  .chat-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 14px; background: var(--card2); border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .chat-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .sugg-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+  .sugg {
+    padding: 10px 15px; border-radius: 999px; border: 1px dashed var(--accent);
+    background: var(--card2); color: var(--accent); font-size: 13px; cursor: pointer; transition: .15s; text-align: left;
+  }
+  .sugg:hover { background: rgba(76,201,240,.1); border-color: var(--accent); transform: translateX(3px); }
+  .msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-end; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #081022; border-bottom-right-radius: 4px; }
+  .msg.ai { align-self: flex-start; background: var(--card2); border-bottom-left-radius: 4px; border: 1px solid var(--line); }
+  .msg.err { align-self: flex-start; background: rgba(248,113,113,.14); color: var(--bad); border: 1px solid var(--bad); white-space: normal; }
+  .msg.typing { align-self: flex-start; color: var(--muted); font-style: italic; }
+  .msg code { background: var(--bg); padding: 1px 5px; border-radius: 5px; font-size: 12px; border: 1px solid var(--line); }
+  .msg-copy {
+    display: block; margin-top: 8px; padding: 4px 10px; font-size: 11px; border-radius: 7px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; transition: .12s;
+  }
+  .msg-copy:hover { border-color: var(--accent); color: var(--accent); }
+  .chat-foot { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); background: var(--card2); }
+  .chat-foot input { flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font-size: 14px; outline: none; }
+  .chat-foot input:focus { border-color: var(--accent); }
+  .ai-status { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+  .ai-settings { margin-top: 12px; }
+  .ai-settings summary { cursor: pointer; color: var(--accent); font-size: 13px; user-select: none; }
+  .ai-settings-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+  .ai-settings-row input, .ai-select {
+    flex: 1; min-width: 140px; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font-size: 13px; outline: none;
+  }
+  .ai-settings-row input:focus, .ai-select:focus { border-color: var(--accent); }
+  .ai-select { flex: 0 0 auto; min-width: 180px; cursor: pointer; }
+
+  .select2 {
+    padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg);
+    color: var(--text); font-size: 14px; outline: none;
+  }
+
+  /* ---------- toast / scrolltop / confetti ---------- */
+  .toast-wrap {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 1200;
+    display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none;
+  }
+  .toast {
+    background: var(--card2); border: 1px solid var(--accent); color: var(--text);
+    padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    box-shadow: var(--shadow); opacity: 0; transform: translateY(10px); transition: .25s; max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: none; }
+  .toast.err { border-color: var(--bad); color: var(--bad); }
+  .toast.ok { border-color: var(--good); color: var(--good); }
+  .scrolltop {
+    position: fixed; bottom: 22px; right: 18px; z-index: 50; width: 42px; height: 42px;
+    border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--accent);
+    cursor: pointer; display: none; align-items: center; justify-content: center; transition: .2s;
+  }
+  .scrolltop.show { display: flex; }
+  .scrolltop:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .scrolltop svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .confetti {
+    position: fixed; top: -12px; width: 8px; height: 14px; border-radius: 2px;
+    z-index: 1500; pointer-events: none; animation: cfFall linear forwards;
+  }
+  @keyframes cfFall { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+  .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 22px; line-height: 2; }
+  .footer code, kbd {
+    background: var(--card2); padding: 2px 7px; border-radius: 6px; font-size: 11px;
+    border: 1px solid var(--line); font-family: inherit; border-bottom-width: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<button class="theme-toggle" id="themeToggle" title="Сменить тему" aria-label="Сменить тему">
+  <svg id="iconSun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H13a1 1 0 0 0-1 1zm8 8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zm0 8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zM12 21a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H13a1 1 0 0 0-1 1zm8-8a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H21a1 1 0 0 0-1 1zM3 4a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H4a1 1 0 0 0-1 1zm0 16a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H4a1 1 0 0 0-1 1zM4 12a1 1 0 0 0 1 1h.01a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/></svg>
+  <svg id="iconMoon" viewBox="0 0 24 24" class="hidden"><path d="M21.75 14.3A8.5 8.5 0 0 1 9.7 2.25 8.5 8.5 0 1 0 21.75 14.3z"/></svg>
+</button>
+
+<div class="wrap">
+
+  <header>
+    <h1>Тренажёр по алгебре и русскому языку</h1>
+    <p>1-11 класс: практика, итоговые тесты и ИИ-репетитор</p>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-tab active" id="tabPracticeNav"><span>Практика</span></button>
+    <button class="nav-tab" id="tabExamNav"><span>Итоговый тест</span><span class="badge hidden" id="examBadge">0</span></button>
+  </nav>
+
+  <div class="chips" id="subjectChips" style="margin-bottom:16px">
+    <button class="chip active" data-s="math">Алгебра</button>
+    <button class="chip" data-s="rus">Русский язык</button>
+  </div>
+
+  <!-- ================= ПРАКТИКА ================= -->
+  <section id="tabPractice">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Выберите класс</div>
+      <div class="chips g11" id="gradesPractice"></div>
+    </div>
+
+    <div class="card" id="topicCard">
+      <div class="card-title"><span class="dot"></span>Темы <span id="topicCount" style="margin-left:auto;color:var(--muted);text-transform:none;letter-spacing:0">0</span></div>
+      <div class="topics-wrap" id="topics"></div>
+      <div class="toolbar">
+        <button class="ai-btn" id="allTopicsBtn" title="Показать темы всех классов">📋 Все темы</button>
+        <button class="ai-btn" id="explainTopicBtn">Объяснить тему (ИИ)</button>
+        <button class="ai-btn" id="randomTopicBtn" title="Случайная тема">🎲 Случайная тема</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="trainerCard">
+      <div class="stats">
+        <div class="stat"><div class="num" id="correct">0</div><div class="lbl">Верно</div></div>
+        <div class="stat"><div class="num" id="wrong">0</div><div class="lbl">Ошибки</div></div>
+        <div class="stat"><div class="num" id="streak">0</div><div class="lbl">Серия</div></div>
+        <div class="stat"><div class="num" id="best">0</div><div class="lbl">Лучшая серия</div></div>
+        <div class="stat"><div class="num" id="accuracy">0%</div><div class="lbl">Точность</div></div>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill" id="progressBar"></div></div>
+      <div class="toggle-row">
+        <input type="checkbox" id="optionToggle" checked>
+        <label for="optionToggle">Показывать варианты ответов</label>
+      </div>
+      <div class="topic-label" id="practiceTopicLabel"></div>
+      <div class="problem" id="problem">Выберите тему, чтобы начать</div>
+      <div class="answer-center">
+        <div class="options hidden" id="practiceOptions"></div>
+        <div id="practiceTyped" class="answer-center">
+          <div class="answer-row">
+            <input type="text" id="answer" inputmode="decimal" autocomplete="off" placeholder="Ваш ответ">
+            <button class="btn btn-primary" id="checkBtn">Ответить</button>
+            <button class="btn btn-secondary" id="nextBtn">Дальше</button>
+          </div>
+          <div class="keypad" id="mathKeypad">
+            <button class="key" data-k="-">−</button>
+            <button class="key" data-k="/">/</button>
+            <button class="key" data-k=".">.</button>
+            <button class="key" data-k=",">,</button>
+            <button class="key" data-k="^">^</button>
+            <button class="key" data-k="(">(</button>
+            <button class="key" data-k=")">)</button>
+            <button class="key" data-k="√">√</button>
+            <button class="key" data-k="back">⌫</button>
+          </div>
+          <div class="keypad ru-keypad hidden" id="ruKeypad">
+            <button class="key" data-k="а">а</button><button class="key" data-k="б">б</button><button class="key" data-k="в">в</button><button class="key" data-k="г">г</button><button class="key" data-k="д">д</button><button class="key" data-k="е">е</button><button class="key" data-k="ё">ё</button><button class="key" data-k="ж">ж</button><button class="key" data-k="з">з</button><button class="key" data-k="и">и</button><button class="key" data-k="й">й</button><button class="key" data-k="к">к</button><button class="key" data-k="л">л</button><button class="key" data-k="м">м</button><button class="key" data-k="н">н</button><button class="key" data-k="о">о</button><button class="key" data-k="п">п</button><button class="key" data-k="р">р</button><button class="key" data-k="с">с</button><button class="key" data-k="т">т</button><button class="key" data-k="у">у</button><button class="key" data-k="ф">ф</button><button class="key" data-k="х">х</button><button class="key" data-k="ц">ц</button><button class="key" data-k="ч">ч</button><button class="key" data-k="ш">ш</button><button class="key" data-k="щ">щ</button><button class="key" data-k="ъ">ъ</button><button class="key" data-k="ы">ы</button><button class="key" data-k="ь">ь</button><button class="key" data-k="э">э</button><button class="key" data-k="ю">ю</button><button class="key" data-k="я">я</button>
+            <button class="key wide" data-k=" ">Пробел</button>
+            <button class="key" data-k="-">-</button>
+            <button class="key" data-k="back">⌫</button>
+          </div>
+        </div>
+        <div class="manual-link hidden" id="manualLinkWrap">
+          <button class="ai-btn" id="manualLink">Ввести ответ вручную</button>
+          <button class="ai-btn hidden" id="manualLinkBack">Вернуться к вариантам</button>
+        </div>
+      </div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+      <div class="toolbar hidden" id="explainErrorWrap">
+        <button class="ai-btn" id="explainErrorBtn">Объяснить ошибку (ИИ)</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-secondary" id="hintBtn">Показать ответ</button>
+        <button class="btn btn-secondary hidden" id="optNextBtn">Дальше</button>
+        <button class="btn btn-secondary" id="askAiBtn">Помочь решить (ИИ)</button>
+        <button class="btn btn-secondary" id="resetBtn">Сбросить счёт темы</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ИТОГОВЫЙ ТЕСТ ================= -->
+  <section id="tabExam" class="hidden">
+    <div class="card" id="examSetupCard">
+      <div class="card-title"><span class="dot"></span>Итоговый тест по итогам класса</div>
+      <div class="chips g11" id="gradesExam"></div>
+      <div class="toolbar" style="margin-top:14px; justify-content:flex-start">
+        <label class="upload-note" style="margin:0;">Количество вопросов:</label>
+        <select class="select2" id="examLen">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+        </select>
+        <button class="btn btn-primary" id="startExamBtn">Начать тест</button>
+      </div>
+      <div class="upload-note" id="examHint">Тест соберёт вопросы по всем темам выбранного класса. Простые вопросы — с вариантами ответа, сложные — с вводом.</div>
+      <div class="upload-note" id="examBest"></div>
+    </div>
+
+    <div class="card hidden" id="examCard">
+      <div class="exam-bar">
+        <div class="exam-meta">
+          <span id="examCounter">Вопрос <b>1</b> из <b>10</b></span>
+          <span>Время: <b id="examTimer">00:00</b></span>
+          <span>Тема: <span id="examTopicLabel"></span></span>
+        </div>
+        <button class="btn btn-secondary" id="examAbortBtn">Завершить досрочно</button>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill" id="examProgress"></div></div>
+      <div class="dot-track" id="examDots"></div>
+      <div class="problem" id="examProblem"></div>
+      <div class="options" id="examOptions"></div>
+      <div class="answer-center hidden" id="examTyped">
+        <div class="answer-row">
+          <input type="text" id="examAnswer" autocomplete="off" placeholder="Ваш ответ (дробь: 1/2 или 0,5)">
+          <button class="btn btn-primary" id="examCheckBtn">Ответить</button>
+        </div>
+        <div class="keypad" id="examMathKeypad">
+          <button class="key-exam" data-k="1">1</button>
+          <button class="key-exam" data-k="2">2</button>
+          <button class="key-exam" data-k="3">3</button>
+          <button class="key-exam" data-k="4">4</button>
+          <button class="key-exam" data-k="5">5</button>
+          <button class="key-exam" data-k="6">6</button>
+          <button class="key-exam" data-k="7">7</button>
+          <button class="key-exam" data-k="8">8</button>
+          <button class="key-exam" data-k="9">9</button>
+          <button class="key-exam" data-k="0">0</button>
+          <button class="key-exam" data-k="-">−</button>
+          <button class="key-exam" data-k="/">/</button>
+          <button class="key-exam" data-k=".">.</button>
+          <button class="key-exam" data-k=",">,</button>
+          <button class="key-exam" data-k="^">^</button>
+          <button class="key-exam" data-k="(">(</button>
+          <button class="key-exam" data-k=")">)</button>
+          <button class="key-exam" data-k="√">√</button>
+          <button class="key-exam" data-k="back">⌫</button>
+        </div>
+        <div class="keypad ru-keypad hidden" id="examRuKeypad">
+          <button class="key-exam" data-k="а">а</button><button class="key-exam" data-k="б">б</button><button class="key-exam" data-k="в">в</button><button class="key-exam" data-k="г">г</button><button class="key-exam" data-k="д">д</button><button class="key-exam" data-k="е">е</button><button class="key-exam" data-k="ё">ё</button><button class="key-exam" data-k="ж">ж</button><button class="key-exam" data-k="з">з</button><button class="key-exam" data-k="и">и</button><button class="key-exam" data-k="й">й</button><button class="key-exam" data-k="к">к</button><button class="key-exam" data-k="л">л</button><button class="key-exam" data-k="м">м</button><button class="key-exam" data-k="н">н</button><button class="key-exam" data-k="о">о</button><button class="key-exam" data-k="п">п</button><button class="key-exam" data-k="р">р</button><button class="key-exam" data-k="с">с</button><button class="key-exam" data-k="т">т</button><button class="key-exam" data-k="у">у</button><button class="key-exam" data-k="ф">ф</button><button class="key-exam" data-k="х">х</button><button class="key-exam" data-k="ц">ц</button><button class="key-exam" data-k="ч">ч</button><button class="key-exam" data-k="ш">ш</button><button class="key-exam" data-k="щ">щ</button><button class="key-exam" data-k="ъ">ъ</button><button class="key-exam" data-k="ы">ы</button><button class="key-exam" data-k="ь">ь</button><button class="key-exam" data-k="э">э</button><button class="key-exam" data-k="ю">ю</button><button class="key-exam" data-k="я">я</button>
+          <button class="key-exam wide" data-k=" ">Пробел</button>
+          <button class="key-exam" data-k="-">-</button>
+          <button class="key-exam" data-k="back">⌫</button>
+        </div>
+      </div>
+      <div class="feedback" id="examFeedback" aria-live="polite"></div>
+      <div class="exam-nav">
+        <button class="btn btn-secondary hidden" id="examBackBtn">Назад</button>
+        <button class="btn btn-secondary" id="examSkipBtn">Пропустить</button>
+        <button class="btn btn-primary" id="examNextBtn" disabled>Дальше</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="examResultCard">
+      <div class="card-title"><span class="dot"></span>Результаты теста</div>
+      <div class="result-head">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 140 140">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4cc9f0"/>
+                <stop offset="100%" stop-color="#7c6ff0"/>
+              </linearGradient>
+            </defs>
+            <circle cx="70" cy="70" r="58" stroke="var(--ring-track)" stroke-width="12" fill="none"/>
+            <circle id="resRing" cx="70" cy="70" r="58" stroke="url(#ringGrad)" stroke-width="12" fill="none"
+                    stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
+          </svg>
+          <div class="ring-val"><span id="resPercent">0%</span><small>правильных</small></div>
+        </div>
+        <div>
+          <div class="grade-big" id="resGrade">5</div>
+          <div class="grade-cap" id="resGradeCap">отлично</div>
+          <div class="grade-hint">
+            <span>≥ 90% — 5</span><span>≥ 70% — 4</span><span>≥ 50% — 3</span><span>меньше — 2</span>
+          </div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="mini-stat"><div class="n" id="resCorrect">0</div><div class="l">верно</div></div>
+        <div class="mini-stat"><div class="n" id="resTotal">0</div><div class="l">вопросов</div></div>
+        <div class="mini-stat"><div class="n" id="resTime">0</div><div class="l">время</div></div>
+        <div class="mini-stat"><div class="n" id="resWeak">0</div><div class="l">слабых тем</div></div>
+      </div>
+      <div class="card-title" style="margin-top:8px"><span class="dot"></span>Разбор ответов</div>
+      <div class="review" id="examReview"></div>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="examRetryBtn">Пройти ещё раз</button>
+        <button class="btn btn-primary hidden" id="examFixBtn">Повторить ошибки</button>
+        <button class="ai-btn" id="examAiBtn">Объяснить ошибки (ИИ)</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>История тестов <button class="hist-del" id="histClear" title="Очистить историю" style="margin-left:auto">Очистить</button></div>
+      <div id="examHistory"></div>
+    </div>
+  </section>
+
+  <!-- ================= ИИ-РЕПЕТИТОР ================= -->
+  <div class="card" id="aiCard">
+    <div class="card-title"><span class="dot"></span>ИИ-репетитор <span class="ai-status" style="margin-left:auto;margin-top:0;">…</span></div>
+    <div class="chat">
+      <div class="chat-head">
+        <span>Спросите: объяснить тему, разобрать ошибку или любой вопрос по математике и русскому языку</span>
+        <button class="ai-btn" id="clearChatBtn" style="padding:4px 10px;font-size:12px">Очистить</button>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="sugg-wrap hidden" id="suggWrap"></div>
+      </div>
+      <div class="chat-foot">
+        <input type="text" id="chatInput" placeholder="Например: объясни тему «Квадратные уравнения» или «Падежи»">
+        <button class="btn btn-primary" id="chatSendBtn">Отправить</button>
+      </div>
+    </div>
+    <details class="ai-settings">
+      <summary>Настройки подключения ИИ</summary>
+      <div class="ai-settings-row">
+        <span style="font-size:13px;color:var(--muted);white-space:nowrap">Готовая настройка:</span>
+        <select id="aiPreset" class="ai-select">
+          <option value="">— выберите провайдера —</option>
+          <option value="openai">OpenAI</option>
+          <option value="gemini">Google Gemini</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="qwen">Qwen (Alibaba)</option>
+          <option value="ollama">Ollama (локально)</option>
+          <option value="grok">Grok (xAI)</option>
+          <option value="giga">GigaChat (Сбер)</option>
+          <option value="local">Другой локальный сервер</option>
+        </select>
+      </div>
+      <div class="ai-settings-row">
+        <input type="text" id="aiBaseUrl" placeholder="URL API (OpenAI-совместимо)">
+        <input type="password" id="aiApiKey" placeholder="API ключ">
+        <input type="text" id="aiModel" list="aiModelList" placeholder="Модель">
+        <datalist id="aiModelList"></datalist>
+      </div>
+      <div class="ai-status" id="aiStatus"></div>
+      <div class="upload-note" id="aiHint"></div>
+    </details>
+  </div>
+
+  <!-- ================= СВОИ ЗАДАНИЯ ================= -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span>Мои задания</div>
+    <div class="upload-area" id="uploadArea">
+      <div>Перетащите файл сюда или нажмите, чтобы выбрать</div>
+      <div class="upload-note">Поддерживается JSON, TXT, CSV</div>
+    </div>
+    <input type="file" id="fileInput" accept=".json,.txt,.csv" class="hidden">
+    <div class="task-list" id="taskList"></div>
+    <button class="btn btn-secondary back-to-normal hidden" id="backToNormal">Вернуться к стандартным заданиям</button>
+    <div class="upload-note" style="margin-top:10px">
+      Формат JSON: <code>[{"q":"2 + 2","a":"4"}]</code>. Если a нет — задание открытое (без проверки).<br>
+      TXT/CSV: одна строка = одно задание: <code>вопрос;ответ</code>. Строка-заголовок <code>q;a</code> пропускается.<br>
+      <a href="#" id="downloadTemplate">Скачать шаблон (JSON)</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Точный ответ: числа, дроби вида <code>1/2</code>, пробелы не важны, запятая в десятичной тоже ок (<code>0,5</code>). По русскому языку ответ вводится словом — кнопки под полем.<br>
+    Горячие клавиши: <kbd>Enter</kbd> — ответить / дальше · <kbd>N</kbd> — следующее задание · <kbd>B</kbd> — назад в тесте.
+    Прогресс и история сохраняются в браузере.
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<button class="scrolltop" id="scrollTopBtn" aria-label="Наверх">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg>
+</button>
+
+<script>
+(function(){
+  "use strict";
+
+  var R = Math.random;
+  function ri(min, max){ return Math.floor(R() * (max - min + 1)) + min; }
+  function min(a, b){ return a < b ? a : b; }
+  function gcd(a, b){ a = Math.abs(a); b = Math.abs(b); while(b){ var t = a % b; a = b; b = t; } return a || 1; }
+  function lcm(a, b){ return Math.abs(a * b) / gcd(a, b); }
+  function reduce(n, d){
+    if (d === 0) return "нет решений";
+    var g = gcd(n, d); n /= g; d /= g;
+    if (d < 0){ n = -n; d = -d; }
+    if (d === 1) return String(n);
+    return n + "/" + d;
+  }
+  function round2(x){ return Math.round(x * 1000) / 1000; }
+  function fmt(x){ return Number.isInteger(x) ? String(x) : String(round2(x)); }
+  function add(n){ return (n < 0 ? " \u2212 " + (-n) : " + " + n); }
+  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function shuffleArr(arr){
+    for (var i = arr.length - 1; i > 0; i--){
+      var j = ri(0, i), t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  /* Безопасный калькулятор выражений: + - * / ( ) ^ ** sqrt √ */
+  function evaluate(expr){
+    expr = String(expr).trim().toLowerCase().replace(/[ \t]+/g, "").replace(/,/g, ".").replace(/\u2212/g, "-").replace(/\u221a/g, "sqrt").replace(/√/g, "sqrt");
+    if (!expr) return null;
+    var pos = 0;
+    function peek(){ return expr[pos]; }
+    function parseExpr(){ var v = parseTerm(); while (peek() === "+" || peek() === "-"){ var c = peek(); pos++; var rhs = parseTerm(); v = c === "+" ? v + rhs : v - rhs; } return v; }
+    function parseTerm(){ var v = parsePow(); while (peek() === "*" || peek() === "/" || peek() === ":"){ var c = peek(); pos++; var rhs = parsePow(); v = c === "*" ? v * rhs : v / rhs; } return v; }
+    function parsePow(){
+      var base = parseUnary();
+      if (peek() === "^" || (peek() === "*" && expr[pos+1] === "*")){
+        if (peek() === "^") pos++; else pos += 2;
+        base = Math.pow(base, parseUnary());
+      }
+      return base;
+    }
+    function parseUnary(){
+      if (peek() === "-"){ pos++; return -parseUnary(); }
+      if (peek() === "+"){ pos++; return parseUnary(); }
+      var v = parseAtom();
+      return (v === null) ? NaN : v;
+    }
+    function parseAtom(){
+      if (peek() === "("){ pos++; var inr = parseExpr(); if (peek() === ")") pos++; return inr; }
+      var m = expr.slice(pos).match(/^(\d+\.?\d*|\.\d+)/);
+      if (m){ pos += m[0].length; return parseFloat(m[0]); }
+      if (expr.slice(pos, pos+4) === "sqrt"){
+        pos += 4;
+        if (peek() === "(") pos++;
+        var inner = parseExpr();
+        if (peek() === ")") pos++;
+        return inner < 0 ? NaN : Math.sqrt(inner);
+      }
+      return NaN;
+    }
+    try {
+      var res = parseExpr();
+      if (pos < expr.length) return null;
+      return (typeof res === "number" && isFinite(res)) ? res : null;
+    } catch(e){ return null; }
+  }
+
+  function fracEq(a, b){
+    var m1 = String(a).trim().match(/^(-?\d+)\s*\/\s*(\d+)$/);
+    var m2 = String(b).trim().match(/^(-?\d+)\s*\/\s*(\d+)$/);
+    if (!m1 || !m2) return false;
+    return parseInt(m1[1], 10) * parseInt(m2[2], 10) === parseInt(m2[1], 10) * parseInt(m1[2], 10);
+  }
+  function numEq(user, expected){
+    if (fracEq(user, expected)) return true;
+    if (/^-?\d+\s*\/\s*\d+$/.test(String(expected).trim()) && /^-?\d+\s*\/\s*\d+$/.test(String(user).trim())) return false;
+    var e = evaluate(expected);
+    var u = evaluate(user);
+    if (u !== null && e !== null){
+      var tol = /^-?\d+(\.\d+)?$/.test(String(expected).trim()) && /^-?\d+(\.\d+)?$/.test(String(user).trim()) ? 1e-6 : 0.005;
+      return Math.abs(u - e) < tol;
+    }
+    return String(user).trim() === String(expected).trim();
+  }
+
+  function isCorrect(inp, expected){
+    var s = String(expected);
+    var ai = String(inp).trim().toLowerCase();
+    if (s === ai) return true;
+
+    if (/[;,]/.test(s) && !/[a-zа-я√\u221a]/.test(s.toLowerCase())){
+      var parts = s.split(/[;,\s]+/).map(function(x){ return x.trim(); }).filter(function(x){ return x !== ""; });
+      var ins = ai.split(/[;,\s]+/).map(function(x){ return x.trim(); }).filter(function(x){ return x !== ""; });
+      if (parts.length === ins.length){
+        var allOk = true;
+        for (var i = 0; i < parts.length; i++){
+          if (!numEq(ins[i], parts[i])){ allOk = false; break; }
+        }
+        if (allOk) return true;
+      } else if (parts.length === 1) { return numEq(ai, parts[0]); }
+    }
+
+    if (/^(ч|н)$/.test(s)){
+      return (s === "ч" && /^(ч|чётное)$/.test(ai)) || (s === "н" && /^(н|нечётное)$/.test(ai));
+    }
+
+    var m = s.match(/^(-?\d+)\s*\(\s*(\d+)\s*\)$/);
+    if (m){
+      var um = ai.replace(/\s+/g, " ").match(/^(-?\d+)[ ,(](\d+)[ )]*$/);
+      return !!(um && um[1] === m[1] && um[2] === m[2]) || ai === m[1];
+    }
+
+    return numEq(ai, s);
+  }
+
+  /* ----------------- БАЗА ТЕМ ПО КЛАССАМ ----------------- */
+  var DB = {
+    1: [
+      { name: "Сложение в пределах 10", gen: function(){ var a = ri(0,9), b = ri(0,9-a); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Вычитание в пределах 10", gen: function(){ var a = ri(0,10), b = ri(0,a); return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; } },
+      { name: "Сложение в пределах 20", gen: function(){ var a = ri(10,20), b = ri(0,20-a); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Вычитание в пределах 20", gen: function(){ var a = ri(10,20), b = ri(0,a); return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; } },
+      { name: "Сравнение чисел", gen: function(){ var a = ri(0,20), b = ri(0,20); return { html: "Какое число больше: " + a + " или " + b + "?", answer: String(Math.max(a,b)) }; } },
+      { name: "Чётные и нечётные", gen: function(){ var a = ri(1,20); return { html: "Число " + a + " чётное или нечётное?<br><small>напишите <b>ч</b> или <b>н</b></small>", answer: a % 2 === 0 ? "ч" : "н" }; } },
+      { name: "Сложение с переходом через 10", gen: function(){ var a = ri(6,9), b = ri(2,10-a); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Вычитание с переходом через 10", gen: function(){ var a = ri(11,17), b = ri(Math.max(2, a-9), Math.min(9, a-2)); return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; } },
+      { name: "Сложение трёх чисел", gen: function(){ var a = ri(1,8), b = ri(1,8), c = ri(1,20-a-b); return { html: a + " + " + b + " + " + c + " = ?", answer: String(a+b+c) }; } }
+    ],
+    2: [
+      { name: "Умножение до 10", gen: function(){ var a = ri(1,10), b = ri(1,10); return { html: a + " \u00d7 " + b + " = ?", answer: String(a*b) }; } },
+      { name: "Деление до 10", gen: function(){ var a = ri(1,10), b = ri(1,10); return { html: (a*b) + " : " + b + " = ?", answer: String(a) }; } },
+      { name: "Сложение в пределах 100", gen: function(){ var a = ri(15,80), b = ri(5,19); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Вычитание в пределах 100", gen: function(){ var a = ri(30,100), b = ri(1,a); return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; } },
+      { name: "Состав числа до 10", gen: function(){ var a = ri(2,10), b = ri(1,a-1); return { html: (a-b) + " + \u25a1 = " + a, answer: String(b) }; } },
+      { name: "Порядок действий", gen: function(){ var a = ri(2,9), b = ri(1,9), c = ri(1, Math.min(9, a+b-1)); return { html: a + " + " + b + " \u2212 " + c + " = ?", answer: String(a+b-c) }; } },
+      { name: "Выражения со скобками", gen: function(){ var v = ri(0,2); if (v === 0){ var a = ri(2,9), b = ri(1,9), c = ri(1, a+b-1); return { html: "(" + a + " + " + b + ") \u2212 " + c + " = ?", answer: String(a+b-c) }; } if (v === 1){ var a2 = ri(3,9), b2 = ri(2,9), c2 = ri(1, b2-1); return { html: a2 + " + (" + b2 + " \u2212 " + c2 + ") = ?", answer: String(a2+b2-c2) }; } var a3 = ri(6,9), b3 = ri(1,3), c3 = ri(1, a3-b3-1); return { html: a3 + " \u2212 (" + b3 + " + " + c3 + ") = ?", answer: String(a3-b3-c3) }; } },
+      { name: "Круглые числа до 1000", gen: function(){ var a = ri(1,8)*100, b = ri(1,8)*100; if (R() < 0.5) return { html: a + " + " + b + " = ?", answer: String(a+b) }; var hi = Math.max(a,b), lo = Math.min(a,b); return { html: hi + " \u2212 " + lo + " = ?", answer: String(hi-lo) }; } },
+      { name: "Десятки и единицы", gen: function(){ var n = ri(11,99); if (R() < 0.5) return { html: "Сколько десятков в числе " + n + "?", answer: String(Math.floor(n/10)) }; return { html: "Сколько единиц в числе " + n + "?", answer: String(n%10) }; } }
+    ],
+    3: [
+      { name: "Умножение двузначного", gen: function(){ var a = ri(11,20), b = ri(2,9); return { html: a + " \u00d7 " + b + " = ?", answer: String(a*b) }; } },
+      { name: "Деление с остатком", gen: function(){ var a = ri(11,50), d = ri(3,9), q = Math.floor(a/d), r = a - q*d; return { html: a + " : " + d + " = ?<br><small>частное и остаток, например 2 1</small>", answer: q + " (" + r + ")" }; } },
+      { name: "Сложение трёхзначных", gen: function(){ var a = ri(100,900), b = ri(100,900); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Вычитание трёхзначных", gen: function(){ var a = ri(300,999), b = ri(100,a); return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; } },
+      { name: "Нахождение неизвестного", gen: function(){ var a = ri(1,9), b = ri(1,9); if (R() < 0.5) return { html: "\u25a1 + " + b + " = " + (a+b), answer: String(a) }; return { html: a + " \u00b7 \u25a1 = " + (a*b), answer: String(b) }; } },
+      { name: "Округление", gen: function(){ var a = ri(11,99)*10 + ri(0,9); return { html: "Округлите " + a + " до десятков", answer: String(Math.round(a/10)*10) }; } },
+      { name: "Периметр прямоугольника", gen: function(){ var a = ri(2,12), b = ri(2,12); return { html: "Чему равен периметр прямоугольника со сторонами " + a + " см и " + b + " см?<br><small>в сантиметрах</small>", answer: String(2*(a+b)) }; } },
+      { name: "Площадь прямоугольника", gen: function(){ var a = ri(2,12), b = ri(2,12); return { html: "Чему равна площадь прямоугольника со сторонами " + a + " см и " + b + " см?<br><small>в см\u00b2</small>", answer: String(a*b) }; } },
+      { name: "Единицы времени", gen: function(){ var h = ri(1,5), m = ri(5,50); return { html: "Сколько минут в " + h + " ч " + m + " мин?", answer: String(h*60+m) }; } }
+    ],
+    4: [
+      { name: "Арифметика до 1000", gen: function(){ var a = ri(100,600), b = ri(100,399), c = ri(100, min(a+b-1, 400)); return { html: a + " + " + b + " \u2212 " + c + " = ?", answer: String(a+b-c) }; } },
+      { name: "Среднее арифметическое", gen: function(){ var a = ri(2,10), b = ri(2,10), c = ri(2,10); return { html: "(" + a + " + " + b + " + " + c + ") : 3 = ?", answer: fmt((a+b+c)/3) }; } },
+      { name: "Дроби: часть числа", gen: function(){ var n = ri(2,10), whole = ri(2,10)*10; return { html: "Найдите 1/" + n + " от числа " + whole, answer: fmt(whole/n) }; } },
+      { name: "Умножение на 1/4", gen: function(){ var a = ri(1,9); return { html: a + " \u00b7 1/4 = ?<br><small>ответ дробью</small>", answer: reduce(a,4) }; } },
+      { name: "Единицы измерения", gen: function(){ var km = ri(1,10), m = ri(1,999); return { html: "Сколько метров в " + km + " км " + m + " м?", answer: String(km*1000+m) }; } },
+      { name: "Выражение с переменной", gen: function(){ var x = ri(1,9), k = ri(2,9); return { html: "При x = " + x + " найдите 3x + " + k, answer: String(3*x+k) }; } },
+      { name: "Сравнение дробей", gen: function(){ var n1, d1, n2, d2, v1, v2; do { n1 = ri(1,7); d1 = ri(2,9); n2 = ri(1,7); d2 = ri(2,9); v1 = n1/d1; v2 = n2/d2; } while (n1*d2 === n2*d1 || Math.abs(v1 - v2) < 0.05); var big = v1 > v2 ? (n1 + "/" + d1) : (n2 + "/" + d2); return { html: "Что больше: " + n1 + "/" + d1 + " или " + n2 + "/" + d2 + "?<br><small>введите дробь или десятичным числом</small>", answer: big }; } },
+      { name: "Умножение и деление на 10, 100", gen: function(){ var a = ri(2,9), b = ri(2,9), v = ri(0,3); if (v === 0) return { html: a + " \u00d7 10 = ?", answer: String(a*10) }; if (v === 1) return { html: b + " \u00d7 100 = ?", answer: String(b*100) }; if (v === 2) return { html: (a*10) + " : 10 = ?", answer: String(a) }; return { html: (b*100) + " : 100 = ?", answer: String(b) }; } },
+      { name: "Округление до сотен", gen: function(){ var n = ri(50,949); return { html: "Округлите " + n + " до сотен", answer: String(Math.round(n/100)*100) }; } }
+    ],
+    5: [
+      { name: "Сложение многозначных", gen: function(){ var a = ri(1000,9999), b = ri(100,999); return { html: a + " + " + b + " = ?", answer: String(a+b) }; } },
+      { name: "Обыкновенные дроби", gen: function(){ var d1 = ri(2,7), d2 = ri(2,7), n1 = ri(1,d1-1), n2 = ri(1,d2-1); return { html: n1 + "/" + d1 + " + " + n2 + "/" + d2 + " = ?<br><small>сократите дробь</small>", answer: reduce(n1*d2+n2*d1, d1*d2) }; } },
+      { name: "Десятичные дроби", gen: function(){ var a = ri(10,99)/10, b = ri(10,99)/10; return { html: a + " + " + b + " = ?", answer: fmt(a+b) }; } },
+      { name: "Проценты", gen: function(){ var n = ri(2,10)*10, p = ri(1,10)*10; return { html: "Найдите " + p + "% от числа " + n, answer: fmt(n*p/100) }; } },
+      { name: "Степень натурального числа", gen: function(){ var a = ri(2,9), p = ri(2,3); return { html: "Вычислите " + a + "<sup>" + p + "</sup>", answer: String(Math.pow(a,p)) }; } },
+      { name: "Задачи на движение", gen: function(){ var v = ri(20,90)*10, t = ri(1,5); return { html: "Автомобиль едет со скоростью " + v + " км/ч. Сколько км он проедет за " + t + " ч?", answer: String(v*t) }; } },
+      { name: "Сравнение десятичных дробей", gen: function(){ var a1, b1, a2, b2; do { a1 = ri(1,8); b1 = ri(1,9); a2 = ri(1,8); b2 = ri(1,9); } while (a1*10+b1 === a2*10+b2); var v1 = a1 + b1/10, v2 = a2 + b2/10; var dec = function(a, b){ return a + "," + b; }; return { html: "Что больше: " + dec(a1,b1) + " или " + dec(a2,b2) + "?<br><small>например 3,7</small>", answer: fmt(Math.max(v1, v2)) }; } },
+      { name: "Дробь от числа", gen: function(){ var m = ri(1,4), n = ri(m+1,7), k = ri(2,10); var full = k*n; return { html: "Найдите " + m + "/" + n + " от числа " + full, answer: String(k*m) }; } },
+      { name: "Число по его проценту", gen: function(){ var w = ri(1,5), p = w*10, k = ri(2,9), v = k*w; return { html: p + "% от числа равны " + v + ". Найдите это число", answer: String(k*10) }; } }
+    ],
+    6: [
+      { name: "НОД и НОК", gen: function(){ if (R() < 0.5){ var a = ri(6,18), b = ri(6,18); return { html: "Найдите НОД(" + a + ", " + b + ")", answer: String(gcd(a,b)) }; } var a = ri(3,7), b = ri(4,9); return { html: "Найдите НОК(" + a + ", " + b + ")", answer: String(lcm(a,b)) }; } },
+      { name: "Сложение и вычитание дробей", gen: function(){ var d1 = ri(2,9), d2 = ri(2,9), n1 = ri(1,d1-1), n2 = ri(1,d2-1); if (R() < 0.5) return { html: n1 + "/" + d1 + " + " + n2 + "/" + d2 + " = ?<br><small>сократите дробь</small>", answer: reduce(n1*d2+n2*d1, d1*d2) }; return { html: n1 + "/" + d1 + " \u2212 " + n2 + "/" + d2 + " = ?<br><small>сократите дробь</small>", answer: reduce(n1*d2-n2*d1, d1*d2) }; } },
+      { name: "Умножение и деление дробей", gen: function(){ var n1 = ri(1,7), d1 = ri(2,9), n2 = ri(1,7), d2 = ri(2,9); if (R() < 0.5) return { html: n1 + "/" + d1 + " \u00b7 " + n2 + "/" + d2 + " = ?", answer: reduce(n1*n2, d1*d2) }; return { html: n1 + "/" + d1 + " : " + n2 + "/" + d2 + " = ?", answer: reduce(n1*d2, d1*n2) }; } },
+      { name: "Пропорции", gen: function(){ var k = ri(2,9), a = ri(2,9), b = ri(2,9); return { html: "Решите пропорцию: " + (a*k) + " : " + a + " = " + (b*k) + " : x", answer: String(b) }; } },
+      { name: "Линейные уравнения", gen: function(){ var x = ri(-9,9), k = ri(2,9), b = ri(1,9), mode = ri(0,3); if (mode === 0) return { html: "Решите: x + " + k + " = " + (x+k), answer: String(x) }; if (mode === 1) return { html: "Решите: x \u2212 " + k + " = " + (x-k), answer: String(x) }; if (mode === 2) return { html: "Решите: " + k + "x = " + (k*x), answer: String(x) }; return { html: "Решите: " + k + "x + " + b + " = " + (k*x+b), answer: String(x) }; } },
+      { name: "Модуль числа", gen: function(){ var a = ri(-12,0); return { html: "Чему равен модуль числа " + a + "?", answer: String(Math.abs(a)) }; } },
+      { name: "Сложение целых", gen: function(){ var a = ri(-15,15), b = ri(-15,15); return { html: a + " + (" + b + ") = ?", answer: String(a+b) }; } },
+      { name: "Умножение и деление отрицательных", gen: function(){ if (R() < 0.5){ var m = ri(1,6), n = ri(-6,6); if (n === 0) n = 2; return { html: m + " \u00b7 (" + n + ") = ?", answer: String(m*n) }; } var b2 = ri(1,6), qu = ri(-5,5); if (qu === 0) qu = 3; return { html: (b2*qu) + " : " + b2 + " = ?", answer: String(qu) }; } },
+      { name: "Число по его дроби", gen: function(){ var m = ri(1,4), n = ri(m+1,7), k = ri(2,9); return { html: m + "/" + n + " числа равны " + (k*m) + ". Найдите это число", answer: String(k*n) }; } },
+      { name: "Выражения с модулями", gen: function(){ var a = ri(-9,-1), b = ri(1,9); if (R() < 0.5) return { html: "|" + a + "| + |" + b + "| = ?", answer: String(-a+b) }; return { html: "|" + a + "| \u2212 |" + b + "| = ?", answer: String(-a-b) }; } }
+    ],
+    7: [
+      { name: "Числовые выражения", gen: function(){ var a = ri(-20,20), b = ri(-20,20); if (R() < 0.33) return { html: a + " + " + b + " = ?", answer: String(a+b) }; if (R() < 0.5) return { html: a + " \u2212 " + b + " = ?", answer: String(a-b) }; return { html: "(" + a + ") \u00b7 (" + b + ") = ?", answer: String(a*b) }; } },
+      { name: "Раскрытие скобок", gen: function(){ var a = ri(1,9), b = ri(1,9); return { html: "Раскройте скобки: " + a + "(x + " + b + ")<br><small>например 3x+15</small>", answer: (a === 1 ? "" : a) + "x+" + (a*b) }; } },
+      { name: "Линейные уравнения", gen: function(){ var x = ri(-9,9), k = ri(2,9), b = ri(-9,9); if (b === 0) b = 3; return { html: "Решите: " + k + "x + " + b + " = " + (k*x+b), answer: fmt(x) }; } },
+      { name: "Формулы сокращённого умножения (значение)", gen: function(){ var a = ri(2,9), b = ri(2,9); if (R() < 0.5) return { html: "(a \u2212 " + b + ")\u00b2 при a = " + a, answer: fmt(Math.pow(a-b,2)) }; return { html: "(a + " + b + ")\u00b2 при a = " + a, answer: fmt(Math.pow(a+b,2)) }; } },
+      { name: "Системы уравнений", gen: function(){ var x = ri(1,5), y = ri(2,5), k1 = ri(1,3), k2 = ri(2,4), b1 = ri(1,3), b2 = ri(-2,2); if (b2 === 0 || k2*x+b2*y === 0){ b2 = 1; } var s1 = k1 + "x" + add(b1) + "y = " + (k1*x+b1*y); var s2 = k2 + "x" + add(b2) + "y = " + (k2*x+b2*y); return { html: "{" + s1 + "<br>{" + s2 + "<br><small>введите: x,y</small>", answer: x + "," + y }; } },
+      { name: "Степень с целым показателем", gen: function(){ var a = ri(2,9), n = ri(2,4); if (R() < 0.35) return { html: "Вычислите: " + a + "<sup>\u22122</sup>", answer: "1/" + (a*a) }; return { html: "Вычислите: " + a + "<sup>" + n + "</sup>", answer: String(Math.pow(a,n)) }; } },
+      { name: "Функция y = kx + b", gen: function(){ var k = ri(1,5), b = ri(-5,5), x = ri(1,5); if (b === 0) b = 2; return { html: "y = " + k + "x" + add(b) + ". Найдите y при x = " + x, answer: String(k*x+b) }; } },
+      { name: "Приведение подобных слагаемых", gen: function(){ var c1 = ri(2,6), c2 = ri(1,5), v = ri(0,2); if (v === 0) return { html: c1 + "x + " + c2 + "x = ?<br><small>например 3x</small>", answer: String(c1+c2) + "x" }; if (v === 1) return { html: c1 + "x \u2212 " + c2 + "x = ?<br><small>например 2x</small>", answer: String(c1-c2) + "x" }; var c3 = ri(1, Math.min(3, c1-1)); return { html: c1 + "x + " + c2 + "x \u2212 " + c3 + "x = ?<br><small>например 3x</small>", answer: String(c1+c2-c3) + "x" }; } },
+      { name: "Уравнение x/a + x/b = c", gen: function(){ var a = ri(2,5), b = ri(2,5), k = ri(1,3); var x = lcm(a,b)*k, c = x/a + x/b; return { html: "x/" + a + " + x/" + b + " = " + c + "<br><small>найдите целое x</small>", answer: String(x) }; } },
+      { name: "Увеличение на проценты", gen: function(){ var p = ri(1,5)*10, k = ri(1,10)*10; return { html: "Число " + k + " увеличили на " + p + "%. Какое число получилось?", answer: fmt(k + k*p/100) }; } }
+    ],
+    8: [
+      { name: "Квадратные корни", gen: function(){ var a = ri(2,12); if (R() < 0.5) return { html: "Вычислите: \u221a(" + (a*a) + ")", answer: String(a) }; return { html: "Вычислите: \u221a(" + (4*a*a) + ")", answer: String(2*a) }; } },
+      { name: "Квадратные уравнения (корни)", gen: function(){ var x1 = ri(-8,-1), x2 = ri(1,8); var p = -(x1+x2), q = x1*x2; var str = "x\u00b2" + add(p) + "x" + add(q) + " = 0"; return { html: str + "<br><small>введите корни через запятую: меньший, больший</small>", answer: x1 + "," + x2 }; } },
+      { name: "Теорема Виета (устно)", gen: function(){ var a = ri(1,6), b = ri(2,8); return { html: "x\u00b2 \u2212 " + (a+b) + "x + " + (a*b) + " = 0. Назовите сумму корней", answer: String(a+b) }; } },
+      { name: "Линейные неравенства", gen: function(){ var x = ri(2,9), k = ri(2,6), b = ri(1,9), m = k*x - b - 1; return { html: "Решите: " + k + "x \u2212 " + b + " > " + m + "<br><small>наименьшее целое значение</small>", answer: String(x) }; } },
+      { name: "Свойства степеней", gen: function(){ var a = ri(2,6), m = ri(2,4), n = ri(2,4); if (R() < 0.5) return { html: "Вычислите: " + a + "<sup>" + m + "</sup> \u00b7 " + a + "<sup>" + n + "</sup>", answer: String(Math.pow(a, m+n)) }; return { html: "Вычислите: (" + a + "<sup>" + m + "</sup>)<sup>" + n + "</sup>", answer: String(Math.pow(a, m*n)) }; } },
+      { name: "График y = x\u00b2", gen: function(){ var x = ri(-5,5); return { html: "y = x\u00b2. Чему равно y при x = " + x + "?", answer: String(x*x) }; } },
+      { name: "Неполное уравнение ax\u00b2 + bx = 0", gen: function(){ var a = ri(1,5), m = ri(1,5), b = a*m; return { html: a + "x\u00b2" + add(b) + "x = 0<br><small>корни через запятую: меньший, больший</small>", answer: (-m) + ",0" }; } },
+      { name: "Квадрат корня", gen: function(){ var n = ri(2,12); if (R() < 0.5) return { html: "(\u221a" + n + ")\u00b2 = ?", answer: String(n) }; return { html: "\u221a(" + (n*n) + ") = ?", answer: String(n) }; } },
+      { name: "Теорема Виета: произведение корней", gen: function(){ var a = ri(1,6), b = ri(1,8); return { html: "x\u00b2 \u2212 " + (a+b) + "x + " + (a*b) + " = 0. Назовите произведение корней", answer: String(a*b) }; } }
+    ],
+    9: [
+      { name: "Квадратичная функция", gen: function(){ var a = ri(2,5), b = ri(1,9), x = ri(1,5); return { html: "y = " + a + "x\u00b2 + " + b + ". Найдите y при x = " + x, answer: String(a*x*x+b) }; } },
+      { name: "Квадратные неравенства", gen: function(){ var a = ri(2,4), b = ri(a+2, a+5); return { html: "x\u00b2 \u2212 " + (a+b) + "x + " + (a*b) + " < 0<br><small>границы: min,max</small>", answer: a + "," + b }; } },
+      { name: "Неполные квадратные уравнения", gen: function(){ var a = ri(2,6); if (R() < 0.5) return { html: "x\u00b2 \u2212 " + (a*a) + " = 0<br><small>положительный корень</small>", answer: String(a) }; return { html: a + "x\u00b2 \u2212 " + 9*a + " = 0<br><small>положительный корень</small>", answer: "3" }; } },
+      { name: "Арифметическая прогрессия", gen: function(){ var a1 = ri(1,9), d = ri(2,5), n = ri(3,8); return { html: "a\u2081 = " + a1 + ", разность d = " + d + ". Найдите a<sub>" + n + "</sub>", answer: String(a1 + d*(n-1)) }; } },
+      { name: "Геометрическая прогрессия", gen: function(){ var a = ri(1,4), q = ri(2,3), n = ri(3,6); return { html: "b\u2081 = " + a + ", знаменатель q = " + q + ". Найдите b<sub>" + n + "</sub>", answer: String(a*Math.pow(q,n-1)) }; } },
+      { name: "Гипербола y = k/x", gen: function(){ var k = ri(2,8), x = ri(1,8); return { html: "y = " + k + "/x. Найдите y при x = " + x, answer: fmt(k/x) }; } },
+      { name: "Сумма арифметической прогрессии", gen: function(){ var a1 = ri(1,9), d = ri(1,4)*2, n = ri(2,7); var S = (2*a1 + d*(n-1))*n/2; return { html: "a\u2081 = " + a1 + ", разность d = " + d + ". Найдите сумму первых " + n + " членов", answer: String(S) }; } },
+      { name: "Сумма геометрической прогрессии", gen: function(){ var b1 = ri(1,4), q = ri(2,3), n = ri(2,6); var S = b1*(Math.pow(q, n) - 1)/(q - 1); return { html: "b\u2081 = " + b1 + ", знаменатель q = " + q + ". Найдите сумму первых " + n + " членов", answer: String(S) }; } },
+      { name: "Вершина параболы", gen: function(){ var a = ri(1,3), k = ri(-2,2); if (k === 0) k = R() < 0.5 ? -2 : 2; var b = 2*a*k, c = ri(1,9); return { html: "y = " + a + "x\u00b2" + add(b) + "x + " + c + ". Чему равен x — координата вершины?<br><small>x = \u2212b/(2a)</small>", answer: fmt(-b/(2*a)) }; } }
+    ],
+    10: [
+      { name: "Табличные значения тригонометрии", gen: function(){ var t = ri(0,2); var opts = [[{h:"sin 30\u00b0", a:1/2},{h:"cos 60\u00b0", a:1/2},{h:"tan 45\u00b0", a:1},{h:"sin 0\u00b0", a:0},{h:"cos 0\u00b0", a:1}]][0]; var c = opts[t]; return { html: "Вычислите: " + c.h + "<br><small>1/2 или 0,5</small>", answer: fmt(c.a) }; } },
+      { name: "Логарифмы", gen: function(){ var b = ri(2,5), a = ri(1,4); if (R() < 0.6) return { html: "log<sub>" + b + "</sub>(" + Math.pow(b,a) + ") = ?", answer: String(a) }; return { html: "log<sub>10</sub>(1000) = ?", answer: "3" }; } },
+      { name: "Степень с рациональным показателем", gen: function(){ var s = ri(2,4), n = ri(1,4), m = ri(n+1, n+4); return { html: "Вычислите: " + Math.pow(s, n*m) + "<sup>1/" + m + "</sup>", answer: String(Math.pow(s, n)) }; } },
+      { name: "Показательные уравнения", gen: function(){ var b = ri(2,4), x = ri(2,5); return { html: b + "<sup>x</sup> = " + Math.pow(b,x), answer: String(x) }; } },
+      { name: "Корень n-й степени", gen: function(){ var a = ri(2,8), n = ri(2,3); var mark = n === 2 ? "\u221a" : (n === 3 ? "\u221b" : n + "\u221a"); return { html: "Упростите: " + mark + "(" + Math.pow(a,n) + ")", answer: String(a) }; } },
+      { name: "Тригонометрические уравнения", gen: function(){ return { html: "Решите: sin x = 0 на [0\u00b0, 180\u00b0]<br><small>корни через запятую</small>", answer: "0,180" }; } },
+      { name: "Формулы приведения", gen: function(){ var v = ri(0,2); if (v === 0) return { html: "Вычислите: sin 150\u00b0<br><small>ответ дробью, например 1/2</small>", answer: "1/2" }; if (v === 1) return { html: "Вычислите: cos 120\u00b0<br><small>ответ дробью, например -1/2</small>", answer: "-1/2" }; return { html: "Вычислите: tan 135\u00b0", answer: "-1" }; } },
+      { name: "Свойства логарифмов", gen: function(){ var b = ri(2,4), n1 = ri(1,3), n2 = ri(1,3); return { html: "log<sub>" + b + "</sub>(" + Math.pow(b, n1) + ") + log<sub>" + b + "</sub>(" + Math.pow(b, n2) + ") = ?", answer: String(n1+n2) }; } },
+      { name: "Радианы и градусы", gen: function(){ var p = [["\u03c0/2", "90"], ["\u03c0/3", "60"], ["\u03c0/4", "45"], ["\u03c0/6", "30"]][ri(0,3)]; return { html: "Чему равен угол " + p[0] + " радиан в градусах?", answer: p[1] }; } }
+    ],
+    11: [
+      { name: "Производная степени", gen: function(){ var k = ri(2,6), n = ri(2,4), x = ri(1,3); return { html: "f(x) = " + k + "x<sup>" + n + "</sup>. Найдите f\u2032(" + x + ")", answer: String(k*n*Math.pow(x, n-1)) }; } },
+      { name: "Производная линейной функции", gen: function(){ var k = ri(2,9), x = ri(1,4); return { html: "f(x) = " + k + "x + 7. Найдите f\u2032(" + x + ")", answer: String(k) }; } },
+      { name: "Первообразная", gen: function(){ var k = ri(1,6); return { html: "F(x) \u2014 первообразная f(x) = " + k + "x\u00b2, F(0) = 0.<br>Найдите F(1). Ответ дробью", answer: reduce(k, 3) }; } },
+      { name: "Определённый интеграл", gen: function(){ var k = ri(2,4), a = ri(0,2), b = ri(a+1, 5); return { html: "Вычислите \u222b<sub>" + a + "</sub><sup>" + b + "</sup> " + k + "x dx", answer: fmt((k*b*b - k*a*a)/2) }; } },
+      { name: "Логарифмические уравнения", gen: function(){ var x = ri(1,9); return { html: "Решите: log<sub>2</sub>(" + Math.pow(2,x) + ") = ?", answer: String(x) }; } },
+      { name: "Показательные неравенства", gen: function(){ var b = ri(2,4); return { html: "Решите: " + b + "<sup>x</sup> > " + b + "<sup>3</sup><br><small>наименьшее целое x</small>", answer: "4" }; } },
+      { name: "Тригонометрия. Основное тождество", gen: function(){ return { html: "Вычислите: sin\u00b2 30\u00b0 + cos\u00b2 30\u00b0<br><small>0, 1/2 или 1?</small>", answer: "1" }; } },
+      { name: "Производная суммы", gen: function(){ var k = ri(1,4), m = ri(1,5), x = ri(1,3); return { html: "f(x) = " + k + "x\u00b3 + " + m + "x\u00b2. Найдите f\u2032(" + x + ")", answer: String(3*k*x*x + 2*m*x) }; } },
+      { name: "Интеграл от x\u207f", gen: function(){ var n = ri(1,5); return { html: "Вычислите: \u222b<sub>0</sub><sup>1</sup> x<sup>" + n + "</sup> dx", answer: reduce(1, n+1) }; } },
+      { name: "Производная sin и cos в 0", gen: function(){ if (R() < 0.5) return { html: "f(x) = sin x. Найдите f\u2032(0)", answer: "1" }; return { html: "f(x) = cos x. Найдите f\u2032(0)", answer: "0" }; } }
+    ]
+  };
+
+  /* ----------------- РУССКИЙ ЯЗЫК ----------------- */
+  var RUA = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+  function pick(a){ return a[ri(0, a.length - 1)]; }
+  function ruVowels(w){ var n = 0; for (var i = 0; i < w.length; i++){ if ("аеиоуыэюя".indexOf(w.charAt(i)) >= 0) n++; } return n; }
+  function ruLetterOpts(c){ var pool = "аеиоуыэябвгджзклмнпрстфхцчшщ".replace(c, ""); var wrong = shuffleArr(pool.split("")).slice(0, 2); return shuffleArr([c].concat(wrong)); }
+
+  var DBRU = {
+    1: [
+      { name: "Русский алфавит", gen: function(){
+        var v = ri(0, 2);
+        if (v === 0) return { html: "Сколько букв в русском алфавите?", answer: "33" };
+        if (v === 1){ var i; do { i = ri(0, 31); } while (i === 5); return { html: "Какая буква стоит <b>после</b> буквы \u00ab" + RUA.charAt(i) + "\u00bb в алфавите?", answer: RUA.charAt(i + 1) }; }
+        var j = ri(0, 32); return { html: "Какой по счёту стоит буква \u00ab" + RUA.charAt(j) + "\u00bb в алфавите? Напиши число.", answer: String(j + 1) };
+      } },
+      { name: "Сколько слогов", gen: function(){
+        var w = pick(["мама","кот","дом","луна","рука","зима","школа","кукла","груша","арбуз","автобус","барабан","телефон","молоко","яблоко"]);
+        return { html: "Сколько слогов в слове \u00ab" + w + "\u00bb?", answer: String(ruVowels(w)) };
+      } },
+      { name: "Гласные буквы", gen: function(){
+        var w = pick(["мама","кот","луна","рука","зима","школа","кукла","груша","арбуз","телефон","молоко","яблоко"]);
+        return { html: "Сколько гласных букв в слове \u00ab" + w + "\u00bb?", answer: String(ruVowels(w)) };
+      } },
+      { name: "Согласные буквы", gen: function(){
+        var w = pick(["кран","стол","окно","шар","дом","лес","рама","горы","сани","диван","кора","чашка"]);
+        return { html: "Сколько согласных букв в слове \u00ab" + w + "\u00bb?", answer: String(w.length - ruVowels(w)) };
+      } },
+      { name: "Сколько букв в слове", gen: function(){
+        var w = pick(["конь","день","лень","пень","окунь","гость","июль","кольцо","польза"]);
+        return { html: "Сколько букв в слове \u00ab" + w + "\u00bb?", answer: String(w.length) };
+      } },
+      { name: "Перенос слов", gen: function(){
+        var p = pick([["мама","ма-ма"],["луна","лу-на"],["рука","ру-ка"],["зима","зи-ма"],["мороз","мо-роз"],["страна","стра-на"],["город","го-род"],["вагон","ва-гон"],["вода","во-да"],["собака","со-ба-ка"],["корова","ко-ро-ва"],["молоко","мо-ло-ко"]]);
+        return { html: "Раздели слово \u00ab" + p[0] + "\u00bb для переноса. Напиши результат через дефис.", answer: p[1] };
+      } },
+      { name: "Заглавная буква", gen: function(){
+        var p = pick([["маша","имя девочки"],["миша","имя мальчика"],["катя","имя девочки"],["петя","имя мальчика"],["москва","название города"],["волга","название реки"],["барсик","кличка кота"]]);
+        return { html: "С какой буквы надо писать слово \u00ab" + p[0] + "\u00bb (" + p[1] + ")?", answer: "с заглавной", options: ["с заглавной","со строчной"] };
+      } },
+      { name: "Знак в конце предложения", gen: function(){
+        var t = ri(0, 2);
+        var q = ["Какой знак ставится в конце вопросительного предложения?","Какой знак ставится в конце восклицательного предложения?","Какой знак обычно ставится в конце повествовательного предложения?"];
+        var a = ["?","!","."];
+        return { html: q[t], answer: a[t], options: ["!","?","."] };
+      } },
+      { name: "Слова-предметы", gen: function(){
+        var p = pick([["стол","бегает","красивый"],["книга","читает","большой"],["собака","лает","злой"],["лампа","светит","яркий"],["река","течёт","глубокая"],["дождь","идёт","сильный"]]);
+        return { html: "Найди слово, которое обозначает <b>предмет</b>:", answer: p[0], options: [p[0], p[1], p[2]] };
+      } },
+      { name: "Слова-действия", gen: function(){
+        var p = pick([["бегает","стол","быстро"],["читает","книга","громко"],["лает","собака","громко"],["светит","лампа","ярко"],["рисует","карандаш","красиво"],["летает","самолёт","высоко"]]);
+        return { html: "Найди слово, которое обозначает <b>действие</b>:", answer: p[0], options: [p[0], p[1], p[2]] };
+      } }
+    ],
+    2: [
+      { name: "ЖИ-ШИ", gen: function(){ return { html: "Какая буква пишется в сочетаниях ЖИ-ШИ?", answer: "и", options: ["и","ы","е"] }; } },
+      { name: "ЧА-ЩА", gen: function(){ return { html: "Какая буква пишется в сочетаниях ЧА-ЩА?", answer: "а", options: ["а","я","о"] }; } },
+      { name: "ЧУ-ЩУ", gen: function(){ return { html: "Какая буква пишется в сочетаниях ЧУ-ЩУ?", answer: "у", options: ["у","ю","и"] }; } },
+      { name: "ЧК-ЧН без Ь", gen: function(){
+        var w = pick(["дочка","ночка","точка","речка","веточка","мечта","печка"]);
+        return { html: "Нужен ли мягкий знак в слове \u00ab" + w + "\u00bb?", answer: "нет", options: ["нет","да"] };
+      } },
+      { name: "Имена собственные", gen: function(){
+        var p = pick([["петя","имя"],["оля","имя мальчика".replace("мальчика","девочки")],["ирина","имя"],["волга","название реки"],["москва","название города"],["барсик","кличка кота"]]);
+        return { html: "Как правильно написать: \u00ab" + p[0] + "\u00bb (" + p[1] + ")?", answer: "с заглавной буквы", options: ["с заглавной буквы","со строчной буквы"] };
+      } },
+      { name: "Проверяемая гласная", gen: function(){
+        var p = pick([["в_да","о"],["р_ка","е"],["в_сна","е"],["п_сьмо","и"],["гн_здо","е"],["з_ма","и"],["с_ва","о"],["стр_на","а"],["тр_ва","а"],["ш_ры","а"],["г_ра","о"],["ст_на","е"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ruLetterOpts(p[1]) };
+      } },
+      { name: "Парные согласные", gen: function(){
+        var p = pick([["гриб","б","п"],["дуб","б","п"],["суп","п","б"],["хлеб","б","п"],["снег","г","к"],["город","д","т"],["этаж","ж","ш"],["мороз","з","с"],["рассказ","з","с"],["глаз","з","с"],["сторож","ж","ш"],["луг","г","к"]]);
+        return { html: "Какой буквой оканчивается слово \u00ab" + p[0] + "\u00bb?", answer: p[1], options: [p[1], p[2]] };
+      } },
+      { name: "Словарные слова", gen: function(){
+        var p = pick([["корова","карова"],["собака","сабака"],["мороз","мароз"],["ветер","витер"],["дорога","дарога"],["молоко","малако"],["работа","рабата"],["мебель","мибель"],["ученик","учиник"],["капуста","копуста"]]);
+        return { html: "Выбери правильное написание:", answer: p[0], options: [p[0], p[1]] };
+      } },
+      { name: "Вопросительное предложение", gen: function(){
+        return { html: "Предложение, в котором о чём-то спрашивают, называется ...", answer: "вопросительным", options: ["вопросительным","повествовательным","восклицательным"] };
+      } },
+      { name: "Восклицательное предложение", gen: function(){
+        return { html: "Предложение, которое передаёт сильные чувства, называется ...", answer: "восклицательным", options: ["восклицательным","повествовательным","вопросительным"] };
+      } }
+    ],
+    3: [
+      { name: "Род имён существительных", gen: function(){
+        var p = pick([["окно","средний"],["стол","мужской"],["мама","женский"],["дерево","средний"],["солнце","средний"],["дверь","женский"],["дом","мужской"],["степь","женский"],["озеро","средний"],["учитель","мужской"]]);
+        return { html: "Определи род существительного \u00ab" + p[0] + "\u00bb:", answer: p[1], options: ["мужской","женский","средний"] };
+      } },
+      { name: "Число имён существительных", gen: function(){
+        var p = pick([["деревья","множественное"],["книга","единственное"],["окна","множественное"],["стол","единственное"],["малыши","множественное"],["солнце","единственное"],["друзья","множественное"],["ручка","единственное"]]);
+        return { html: "В каком числе стоит существительное \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["единственное","множественное"] };
+      } },
+      { name: "Время глагола", gen: function(){
+        var p = pick([["читает","настоящем"],["читал","прошедшем"],["прочитает","будущем"],["пишет","настоящем"],["писал","прошедшем"],["напишет","будущем"],["играют","настоящем"],["пел","прошедшем"]]);
+        return { html: "В каком времени стоит глагол \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["настоящем","прошедшем","будущем"] };
+      } },
+      { name: "Падежи (вопросы)", gen: function(){
+        var p = pick([["нет (кого? чего?)","родительный",["родительный","винительный","именительный"]],["вижу (кого? что?)","винительный",["винительный","родительный","именительный"]],["даю (кому? чему?)","дательный",["дательный","родительный","творительный"]],["горжусь (кем? чем?)","творительный",["творительный","дательный","предложный"]],["говорю (о ком? о чём?)","предложный",["предложный","творительный","именительный"]],["есть (кто? что?)","именительный",["именительный","родительный","винительный"]]]);
+        return { html: "Какой падеж отвечает на вопросы <b>" + p[0] + "</b>?", answer: p[1], options: p[2] };
+      } },
+      { name: "Склонение существительных", gen: function(){
+        var p = pick([["мама","1"],["земля","1"],["стол","2"],["окно","2"],["конь","2"],["ночь","3"],["степь","3"],["мышь","3"],["дочь","3"],["гость","2"],["дядя","1"],["печь","3"]]);
+        return { html: "Определи склонение существительного \u00ab" + p[0] + "\u00bb:", answer: p[1], options: ["1","2","3"] };
+      } },
+      { name: "Суффикс", gen: function(){
+        var p = pick([["домик","ик"],["садик","ик"],["носик","ик"],["хвостик","ик"],["листок","ок"],["грибок","ок"],["лесок","ок"],["горбок","ок"]]);
+        return { html: "Какой суффикс в слове \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["ик","ок"] };
+      } },
+      { name: "Приставка", gen: function(){
+        var p = pick([["переход","пере"],["приход","при"],["выход","вы"],["подъезд","под"],["заезд","за"],["отход","от"],["забег","за"],["перебег","пере"]]);
+        return { html: "Напиши приставку в слове \u00ab" + p[0] + "\u00bb.", answer: p[1] };
+      } },
+      { name: "Окончание", gen: function(){
+        var p = pick([["столы","ы"],["окна","а"],["дома","а"],["книги","и"],["кошка","а"],["поля","я"],["стены","ы"],["моря","я"]]);
+        return { html: "Какое окончание в слове \u00ab" + p[0] + "\u00bb? Напиши букву.", answer: p[1], options: ["а","ы","и","я"] };
+      } },
+      { name: "НЕ с глаголами", gen: function(){
+        return { html: "С глаголами частица НЕ пишется ...", answer: "раздельно", options: ["раздельно","слитно"] };
+      } },
+      { name: "Одушевлённость", gen: function(){
+        var p = pick([["собака","одушевлённое"],["кот","одушевлённое"],["стол","неодушевлённое"],["ветер","неодушевлённое"],["лиса","одушевлённое"],["город","неодушевлённое"],["птица","одушевлённое"],["дерево","неодушевлённое"]]);
+        return { html: "Существительное \u00ab" + p[0] + "\u00bb — ...", answer: p[1], options: ["одушевлённое","неодушевлённое"] };
+      } }
+    ],
+    4: [
+      { name: "Части речи", gen: function(){
+        var p = pick([["красивый","прилагательное"],["бежать","глагол"],["стол","существительное"],["быстро","наречие"],["книга","существительное"],["прыгать","глагол"],["громкий","прилагательное"],["весело","наречие"]]);
+        return { html: "Какой частью речи является слово \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["существительное","прилагательное","глагол","наречие"] };
+      } },
+      { name: "Спряжение глагола", gen: function(){
+        var p = pick([["читать","1-е"],["говорить","2-е"],["рисовать","1-е"],["любить","2-е"],["думать","1-е"],["лечить","2-е"],["гулять","1-е"],["спешить","2-е"]]);
+        return { html: "Определи спряжение глагола \u00ab" + p[0] + "\u00bb:", answer: p[1], options: ["1-е","2-е"] };
+      } },
+      { name: "Окончания глаголов", gen: function(){
+        var p = pick([["он чита_т","е"],["он рису_т","е"],["он говор_т","и"],["он спеш_т","и"],["он люб_т","и"],["он бега_т","е"],["он вид_т","и"],["он смотр_т","и"]]);
+        return { html: "Вставь пропущенное окончание: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["е","и"] };
+      } },
+      { name: "Ь после шипящих", gen: function(){
+        var p = pick([["ночь","ж. р.","да"],["дочь","ж. р.","да"],["мышь","ж. р.","да"],["рожь","ж. р.","да"],["печь","ж. р.","да"],["луч","м. р.","нет"],["врач","м. р.","нет"],["шалаш","м. р.","нет"],["камыш","м. р.","нет"]]);
+        return { html: "Пишется ли мягкий знак на конце слова \u00ab" + p[0] + "\u00bb (" + p[1] + ")?", answer: p[2], options: ["да","нет"] };
+      } },
+      { name: "Однородные члены", gen: function(){
+        var s = pick([["В саду растут яблони, груши и сливы.",3],["Мы купили хлеб, молоко и масло.",3],["Дети бегали, прыгали и смеялись.",3],["В лесу живут лисы, волки и зайцы.",3]]);
+        return { html: "Сколько однородных членов в предложении «" + s[0] + "»? Напиши число.", answer: String(s[1]) };
+      } },
+      { name: "Приставки ПРЕ- и ПРИ-", gen: function(){
+        var p = pick([["пр_бежать (приближение)","и"],["пр_открыть (неполнота)","и"],["пр_клеить (присоединение)","и"],["пр_градить (значение «пере»)","е"],["пр_мудрый (очень)","е"],["пр_рвать (значение «пере»)","е"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["е","и"] };
+      } },
+      { name: "Падеж в предложении", gen: function(){
+        var p = pick([["горжусь братом","творительный"],["нет брата","родительный"],["подарю брату","дательный"],["вижу брата","винительный"],["говорю о брате","предложный"]]);
+        return { html: "Определи падеж слова «брат»: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["именительный","родительный","дательный","винительный","творительный","предложный"] };
+      } },
+      { name: "Подлежащее", gen: function(){
+        return { html: "Подлежащее отвечает на вопросы ...", answer: "кто? что?", options: ["кто? что?","кого? чего?","кому? чему?"] };
+      } },
+      { name: "Сказуемое", gen: function(){
+        return { html: "Сказуемое обозначает ...", answer: "действие предмета", options: ["действие предмета","предмет","признак предмета"] };
+      } },
+      { name: "Главные члены предложения", gen: function(){
+        return { html: "Подлежащее и сказуемое — это ...", answer: "главные члены предложения", options: ["главные члены предложения","второстепенные члены","однородные члены"] };
+      } }
+    ],
+    5: [
+      { name: "И-Ы после Ц", gen: function(){
+        var p = pick([["цирк","и"],["цифра","и"],["циркуль","и"],["цыган","ы"],["цыплёнок","ы"],["акация","и"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["и","ы"] };
+      } },
+      { name: "Приставки на З-С", gen: function(){
+        var p = pick([["рассвет","с"],["разлив","з"],["исправить","с"],["избежать","з"],["бесплатный","с"],["беззвучный","з"],["разбег","з"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["з","с"] };
+      } },
+      { name: "ЛАГ-ЛОЖ", gen: function(){
+        var p = pick([["пол_жить","о"],["изл_гать","а"],["прил_гать","а"],["предл_жить","о"],["распол_гать","а"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["а","о"] };
+      } },
+      { name: "РАСТ-РОС", gen: function(){
+        var p = pick([["р_стение","а"],["р_сти","а"],["выр_с","о"],["р_сли","о"],["зар_сли","о"],["выр_стить","а"],["р_сток","о"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["а","о"] };
+      } },
+      { name: "Части слова", gen: function(){
+        var p = pick([["Часть слова перед корнем — это ...","приставка",["приставка","суффикс","окончание"]],["Часть слова после корня — это ...","суффикс",["суффикс","приставка","окончание"]],["Изменяемая часть слова в конце — это ...","окончание",["окончание","корень","приставка"]],["Главная значимая часть слова — это ...","корень",["корень","приставка","суффикс"]]]);
+        return { html: p[0], answer: p[1], options: p[2] };
+      } },
+      { name: "Синонимы", gen: function(){
+        var p = pick([["храбрый","смелый","слабый","тихий"],["большой","огромный","маленький","узкий"],["красивый","прекрасный","уродливый","громкий"],["говорить","разговаривать","молчать","кричать"],["дорога","путь","сарай","ручей"],["весёлый","радостный","грустный","быстрый"]]);
+        return { html: "Подбери синоним к слову \u00ab" + p[0] + "\u00bb:", answer: p[1], options: [p[1], p[2], p[3]] };
+      } },
+      { name: "Антонимы", gen: function(){
+        var p = pick([["тёмный","светлый","чёрный","тусклый"],["добрый","злой","щедрый","весёлый"],["широкий","узкий","длинный","большой"],["начало","конец","середина","край"],["радость","грусть","печаль","смех"],["подниматься","опускаться","поднимать","стоять"]]);
+        return { html: "Подбери антоним к слову \u00ab" + p[0] + "\u00bb:", answer: p[1], options: [p[1], p[2], p[3]] };
+      } },
+      { name: "Однокоренные слова", gen: function(){
+        var p = pick([["вода","водный","водитель","вожак"],["гора","горный","гореть","горожанин"],["лес","лесной","лестница","лисий"],["дом","домашний","дым","сад"]]);
+        return { html: "Найди однокоренное слово к слову \u00ab" + p[0] + "\u00bb:", answer: p[1], options: [p[1], p[2], p[3]] };
+      } },
+      { name: "НЕ с глаголами", gen: function(){
+        return { html: "Как пишется частица НЕ с глаголом: \u00abОн (не)спал\u00bb?", answer: "раздельно", options: ["раздельно","слитно"] };
+      } },
+      { name: "Многозначные слова", gen: function(){
+        var p = pick([["игла","да"],["лист","да"],["ключ","да"],["лук","да"],["ручка","да"],["карандаш","нет"],["линейка","нет"]]);
+        return { html: "Является ли слово \u00ab" + p[0] + "\u00bb многозначным?", answer: p[1], options: ["да","нет"] };
+      } }
+    ],
+    6: [
+      { name: "Разряд местоимений", gen: function(){
+        var p = pick([["мой","притяжательное"],["я","личное"],["себя","возвратное"],["этот","указательное"],["каждый","определительное"],["твой","притяжательное"],["мы","личное"],["тот","указательное"]]);
+        return { html: "Определи разряд местоимения \u00ab" + p[0] + "\u00bb:", answer: p[1], options: ["личное","возвратное","притяжательное","указательное","определительное"] };
+      } },
+      { name: "Н и НН в прилагательных", gen: function(){
+        var p = pick([["гуси_ый","н"],["лебеди_ый","н"],["стекля_ый","нн"],["деревя_ый","нн"],["ветре_ый","н"],["лимо_ый","нн"],["карти_ый","нн"],["барани_ый","н"]]);
+        return { html: "Вставь пропущенные буквы: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["н","нн"] };
+      } },
+      { name: "ПРЕ- и ПРИ- (продолжение)", gen: function(){
+        var p = pick([["пр_открыть","и"],["пр_брежный","и"],["пр_мудрый","е"],["пр_рвать","е"],["пр_сесть","и"],["пр_восходный","е"],["пр_лететь","и"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["е","и"] };
+      } },
+      { name: "Чередование Е-И в корне", gen: function(){
+        var p = pick([["зам_реть","е"],["зам_рать","и"],["ст_реть","е"],["ст_рать","и"],["бл_стеть","е"],["бл_стать","и"],["выж_чь","е"],["выж_гать","и"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["е","и"] };
+      } },
+      { name: "Имя числительное", gen: function(){
+        var w = pick(["два","пять","сто","десять","три"]);
+        return { html: "Какой частью речи является слово \u00ab" + w + "\u00bb?", answer: "имя числительное", options: ["имя числительное","имя существительное","имя прилагательное"] };
+      } },
+      { name: "Слитное написание наречий", gen: function(){
+        var p = pick([["направо","слитно"],["налево","слитно"],["вдали","слитно"],["сначала","слитно"],["издали","слитно"]]);
+        return { html: "Как пишется наречие \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["слитно","раздельно","через дефис"] };
+      } },
+      { name: "Наречия через дефис", gen: function(){
+        var p = pick([["по-новому","через дефис"],["по-дружески","через дефис"],["во-первых","через дефис"],["по-русски","через дефис"]]);
+        return { html: "Как пишется наречие \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["через дефис","слитно","раздельно"] };
+      } },
+      { name: "О и А на конце наречий", gen: function(){
+        var p = pick([["издавн_","а"],["досыт_","а"],["снов_","а"],["влев_","о"],["налев_","о"],["занов_","о"],["начист_","о"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["а","о"] };
+      } },
+      { name: "Н и НН в наречиях", gen: function(){
+        var p = pick([["торжестве_о","нн"],["интерес_о","н"],["медле_о","нн"],["весел_о","н"],["искре_е","нн"],["естестве_о","нн"]]);
+        return { html: "Вставь пропущенные буквы: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["н","нн"] };
+      } },
+      { name: "Возвратное местоимение", gen: function(){
+        return { html: "Укажи возвратное местоимение:", answer: "себя", options: ["себя","мой","этот","кто"] };
+      } }
+    ],
+    7: [
+      { name: "Причастие", gen: function(){ return { html: "\u00abЧитающий\u00bb — это ...", answer: "причастие", options: ["причастие","деепричастие","прилагательное"] }; } },
+      { name: "Деепричастие", gen: function(){ return { html: "\u00abЧитая\u00bb — это ...", answer: "деепричастие", options: ["деепричастие","причастие","наречие"] }; } },
+      { name: "Действительное и страдательное", gen: function(){
+        if (ri(0, 1)) return { html: "\u00abЧитающий\u00bb — причастие ...", answer: "действительное", options: ["действительное","страдательное"] };
+        return { html: "\u00abПрочитанный\u00bb — причастие ...", answer: "страдательное", options: ["страдательное","действительное"] };
+      } },
+      { name: "Н и НН в причастиях", gen: function(){
+        var p = pick([["краше_ый (нет приставки)","н"],["покраше_ый (есть приставка)","нн"],["варе_ый в кастрюле (есть зависимое слово)","нн"],["сваре_ый (есть приставка)","нн"],["рва_ый","н"],["слома_ый","нн"],["чита_ый","н"],["прочита_ый (есть приставка)","нн"]]);
+        return { html: "Вставь буквы: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["н","нн"] };
+      } },
+      { name: "НЕ с причастиями", gen: function(){
+        var p = pick([["(не)прочитанная книга (нет зависимых слов)","слитно"],["(не)прочитанная мной книга (есть зависимое слово)","раздельно"],["(не)прочитанная вовремя книга","раздельно"],["совсем (не)выученный урок","раздельно"]]);
+        return { html: "Как пишется НЕ: \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["слитно","раздельно"] };
+      } },
+      { name: "НЕ с деепричастиями", gen: function(){
+        var p = pick([["(не)прочитав","раздельно"],["(не)зная","раздельно"],["(не)годуя (без НЕ не употребляется)","слитно"],["(не)навидя (без НЕ не употребляется)","слитно"]]);
+        return { html: "Как пишется НЕ: \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["раздельно","слитно"] };
+      } },
+      { name: "Причастный оборот", gen: function(){
+        return { html: "Причастие с зависимыми словами называется ...", answer: "причастным оборотом", options: ["причастным оборотом","деепричастным оборотом","словосочетанием"] };
+      } },
+      { name: "Деепричастный оборот", gen: function(){
+        return { html: "Деепричастие с зависимыми словами называется ...", answer: "деепричастным оборотом", options: ["деепричастным оборотом","причастным оборотом","словосочетанием"] };
+      } },
+      { name: "Обособление причастного оборота", gen: function(){
+        if (ri(0, 1)) return { html: "«Девочка, читающая книгу, улыбнулась». Оборот стоит после определяемого слова. Нужна ли запятая?", answer: "да", options: ["да","нет"] };
+        return { html: "«Читающая книгу девочка улыбнулась». Оборот стоит перед определяемым словом. Обособляется ли он?", answer: "нет", options: ["нет","да"] };
+      } },
+      { name: "Суффиксы причастий", gen: function(){
+        var p = pick([["кле_щий (от клеить, II спр.)","я"],["дыш_щий (от дышать, II спр.)","а"],["стро_щий (от строить, II спр.)","я"],["пиш_щий (от писать, I спр.)","у"],["чита_щий (от читать, I спр.)","у"],["слыш_щий (от слышать, II спр.)","а"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["у","ю","а","я"] };
+      } }
+    ],
+    8: [
+      { name: "Безличные предложения", gen: function(){
+        return { html: "\u00abВечереет.\u00bb — это ...", answer: "безличное предложение", options: ["безличное предложение","назывное предложение","определённо-личное предложение"] };
+      } },
+      { name: "Назывные предложения", gen: function(){
+        return { html: "\u00abНочь. Улица. Фонарь.\u00bb — это ...", answer: "назывные предложения", options: ["назывные предложения","безличные предложения","полные предложения"] };
+      } },
+      { name: "Определённо-личные предложения", gen: function(){
+        return { html: "\u00abЛюблю грозу в начале мая.\u00bb (главный член — глагол 1-го лица) — это ...", answer: "определённо-личное предложение", options: ["определённо-личное предложение","неопределённо-личное предложение","безличное предложение"] };
+      } },
+      { name: "Дополнение", gen: function(){
+        return { html: "В предложении «Я читаю книгу» слово «книгу» — это ...", answer: "дополнение", options: ["дополнение","определение","обстоятельство"] };
+      } },
+      { name: "Определение", gen: function(){
+        return { html: "В предложении «Синяя ручка лежит на столе» слово «синяя» — это ...", answer: "определение", options: ["определение","дополнение","обстоятельство"] };
+      } },
+      { name: "Обстоятельство", gen: function(){
+        return { html: "В предложении «Он шёл быстро» слово «быстро» — это ...", answer: "обстоятельство", options: ["обстоятельство","определение","дополнение"] };
+      } },
+      { name: "Грамматическая основа", gen: function(){
+        return { html: "Подлежащее и сказуемое образуют ...", answer: "грамматическую основу", options: ["грамматическую основу","словосочетание","обращение"] };
+      } },
+      { name: "Вводные слова", gen: function(){
+        var p = pick([["конечно","да"],["вероятно","да"],["к счастью","да"],["наверное","да"],["сегодня","нет"],["вчера","нет"]]);
+        return { html: "Может ли слово \u00ab" + p[0] + "\u00bb быть вводным в предложении?", answer: p[1], options: ["да","нет"] };
+      } },
+      { name: "Обращение", gen: function(){
+        var p = pick([["«Друзья, до встречи!» — слово «друзья»","да"],["«Я иду в школу». — слово «школа»","нет"],["«Мама, помоги!» — слово «мама»","да"],["«Дождь идёт». — слово «дождь»","нет"]]);
+        return { html: "Является ли обращением: " + p[0] + "?", answer: p[1], options: ["да","нет"] };
+      } },
+      { name: "Обособление деепричастного оборота", gen: function(){
+        return { html: "«Улыбнувшись, она вошла». Деепричастный оборот обособляется?", answer: "да", options: ["да","нет"] };
+      } }
+    ],
+    9: [
+      { name: "Тип придаточного", gen: function(){
+        var p = pick([["Я знаю, что он придёт.","изъяснительное",["изъяснительное","определительное","обстоятельственное"]],["Дом, который стоял у реки, был старым.","определительное",["определительное","изъяснительное","обстоятельственное"]],["Мы вышли, когда стемнело.","обстоятельственное",["обстоятельственное","определительное","изъяснительное"]],["Если пойдёт дождь, мы останемся дома.","обстоятельственное",["обстоятельственное","определительное","изъяснительное"]]]);
+        return { html: "Определи тип придаточного: «" + p[0] + "»", answer: p[1], options: p[2] };
+      } },
+      { name: "Двоеточие в БСП", gen: function(){
+        return { html: "Вторая часть БСП поясняет первую («Я понял: он не придёт»). Какой знак ставится?", answer: "двоеточие", options: ["двоеточие","тире","запятая"] };
+      } },
+      { name: "Тире в БСП", gen: function(){
+        var p = pick([["Вторая часть — следствие («Выпал снег — стало холодно»).","тире"],["Вторая часть противопоставлена («Семь раз отмерь — один раз отрежь»).","тире"]]);
+        return { html: "Какой знак ставится в бессоюзном сложном предложении, если: " + p[0] + "?", answer: p[1], options: ["тире","двоеточие","запятая"] };
+      } },
+      { name: "Сколько грамматических основ", gen: function(){
+        var p = pick([["Солнце село, и наступила тишина.",2],["Лес спит, а птицы поют.",2],["Начался дождь, и все побежали к дому.",2],["Наступила ночь.",1],["Кто не работает, тот не ест.",2]]);
+        return { html: "Сколько грамматических основ в предложении: «" + p[0] + "»? Напиши число.", answer: String(p[1]) };
+      } },
+      { name: "Подчинительные союзы", gen: function(){
+        return { html: "В предложении «Я знаю, что он придёт» союз «что» — ...", answer: "подчинительный", options: ["подчинительный","сочинительный"] };
+      } },
+      { name: "Сочинительные союзы", gen: function(){
+        return { html: "В предложении «Солнце село, и наступила тишина» союз «и» — ...", answer: "сочинительный", options: ["сочинительный","подчинительный"] };
+      } },
+      { name: "Сложноподчинённое предложение", gen: function(){
+        return { html: "В СПП есть главная часть и ...", answer: "придаточная", options: ["придаточная","сочинительная","прямая"] };
+      } },
+      { name: "Запятая в СПП", gen: function(){
+        return { html: "Придаточная часть в СПП отделяется от главной запятой?", answer: "да", options: ["да","нет"] };
+      } },
+      { name: "Неполные предложения", gen: function(){
+        return { html: "«Мы идём в кино, а вы — в театр». Во второй части пропущено сказуемое. Это предложение ...", answer: "неполное", options: ["неполное","полное","односоставное"] };
+      } },
+      { name: "Сложное предложение", gen: function(){
+        return { html: "Предложение, в котором две и более грамматические основы, называется ...", answer: "сложным", options: ["сложным","простым","словосочетанием"] };
+      } }
+    ],
+    10: [
+      { name: "Ударение в словах", gen: function(){
+        var p = pick([["звонит","2"],["торты","1"],["красивее","2"],["договор","3"],["досуг","2"],["шарфы","1"],["баловать","3"],["щавель","2"]]);
+        return { html: "На каком слоге стоит ударение в слове \u00ab" + p[0] + "\u00bb? Напиши номер.", answer: p[1], options: ["1","2","3"] };
+      } },
+      { name: "Средства выразительности", gen: function(){
+        var p = pick([["Преувеличение — это ...","гипербола",["гипербола","метафора","эпитет"]],["Красочное образное определение («золотая осень») — это ...","эпитет",["эпитет","гипербола","метафора"]],["Скрытое сравнение («время бежит») — это ...","метафора",["метафора","эпитет","олицетворение"]],["Наделение неживого свойствами живого — это ...","олицетворение",["олицетворение","метафора","сравнение"]],["Оборот с союзом «как» («полетел, как птица») — это ...","сравнение",["сравнение","гипербола","эпитет"]]]);
+        return { html: p[0], answer: p[1], options: p[2] };
+      } },
+      { name: "Производные предлоги", gen: function(){
+        var p = pick([["Как пишется предлог «(в)течение» (в значении времени)?","раздельно"],["Как пишется предлог «(в)следствие» (в значении причины)?","слитно"],["Как пишется предлог «(на)счёт» (в значении «о»)?","слитно"],["Как пишется предлог «(в)продолжение» (в значении времени)?","раздельно"]]);
+        return { html: p[0], answer: p[1], options: ["раздельно","слитно"] };
+      } },
+      { name: "НЕ с разными частями речи", gen: function(){
+        var p = pick([["«(не)был»","раздельно"],["«(не)годовал» (без НЕ не употребляется)","слитно"],["«(не)навидеть» (без НЕ не употребляется)","слитно"],["«(не)широкий, а узкий» (есть противопоставление)","раздельно"]]);
+        return { html: "Как пишется НЕ: " + p[0] + "?", answer: p[1], options: ["раздельно","слитно"] };
+      } },
+      { name: "Сложные прилагательные", gen: function(){
+        var p = pick([["тёмно-синий","через дефис"],["русско-английский","через дефис"],["сельскохозяйственный","слитно"],["ярко-красный","через дефис"],["железнодорожный","слитно"]]);
+        return { html: "Как пишется прилагательное \u00ab" + p[0] + "\u00bb?", answer: p[1], options: ["через дефис","слитно"] };
+      } },
+      { name: "КАС-КОС", gen: function(){
+        var p = pick([["кас_ться","а"],["кос_нуться","о"],["прикас_ться","а"],["прикос_нуться","о"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["а","о"] };
+      } },
+      { name: "ГОР-ГАР", gen: function(){
+        var p = pick([["заг_реть","о"],["заг_р","а"],["сг_реть","о"],["наг_р","а"],["дог_реть","о"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["а","о"] };
+      } },
+      { name: "Прямая речь", gen: function(){
+        return { html: "Слова, передающие чужую речь дословно, называются ...", answer: "прямой речью", options: ["прямой речью","косвенной речью","диалогом"] };
+      } }
+    ],
+    11: [
+      { name: "Типы сказуемого", gen: function(){
+        var p = pick([["«Он стал врачом» — это ...","составное именное",["составное именное","простое глагольное","составное глагольное"]],["«Я хочу петь» — это ...","составное глагольное",["составное глагольное","простое глагольное","составное именное"]],["«Он пишет» — это ...","простое глагольное",["простое глагольное","составное именное","составное глагольное"]]]);
+        return { html: p[0], answer: p[1], options: p[2] };
+      } },
+      { name: "Самостоятельные и служебные", gen: function(){
+        var p = pick([["Предлог — это ... часть речи","служебная"],["Союз — это ... часть речи","служебная"],["Частица — это ... часть речи","служебная"],["Глагол — это ... часть речи","самостоятельная"],["Прилагательное — это ... часть речи","самостоятельная"]]);
+        return { html: p[0], answer: p[1], options: ["служебная","самостоятельная"] };
+      } },
+      { name: "Суффиксы -ЕМ-, -ИМ-", gen: function(){
+        var p = pick([["вид_мый (от видеть, II спр.)","и"],["реша_мый (от решать, I спр.)","е"],["чита_мый (от читать, I спр.)","е"],["слыш_мый (от слышать, II спр.)","и"],["гон_мый (от гнать, II спр.)","и"]]);
+        return { html: "Вставь пропущенную букву: \u00ab" + p[0] + "\u00bb", answer: p[1], options: ["е","и"] };
+      } },
+      { name: "Тире между подлежащим и сказуемым", gen: function(){
+        if (ri(0, 1)) return { html: "«Москва — столица России». Подлежащее и сказуемое выражены существительными. Ставится ли тире?", answer: "да", options: ["да","нет"] };
+        return { html: "«Он отличный врач». Подлежащее выражено местоимением. Ставится ли тире?", answer: "нет", options: ["нет","да"] };
+      } },
+      { name: "Мягкий знак в числительных", gen: function(){
+        var w = pick(["пятьдесят","шестьдесят","семьсот","одиннадцать","тридцать"]);
+        return { html: "Сколько в слове \u00ab" + w + "\u00bb мягких знаков (Ь)? Напиши число.", answer: "1" };
+      } },
+      { name: "Сложное с разными видами связи", gen: function(){
+        return { html: "Предложение с сочинительной и подчинительной связью — это ...", answer: "сложное с разными видами связи", options: ["сложное с разными видами связи","СПП","ССП"] };
+      } },
+      { name: "Ь в глаголах", gen: function(){
+        var p = pick([["«Он учится» (3-е лицо) — пишется ли мягкий знак?","не пишется"],["«Нужно учиться» (инфинитив) — пишется ли мягкий знак?","пишется"],["«Мальчик смеётся» (3-е лицо) — пишется ли мягкий знак?","не пишется"],["«Будет смеяться» (инфинитив) — пишется ли мягкий знак?","пишется"]]);
+        return { html: p[0], answer: p[1], options: ["пишется","не пишется"] };
+      } },
+      { name: "Устаревшие слова", gen: function(){
+        var p = pick([["очи","глаза"],["ланиты","щёки"],["чело","лоб"],["перст","палец"],["глаголет","говорит"]]);
+        return { html: "Что обозначает устаревшее слово \u00ab" + p[0] + "\u00bb?", answer: p[1], options: [p[1], "уши", "руки"] };
+      } }
+    ]
+  };
+
+  /* ----------------- УТИЛИТЫ UI ----------------- */
+  function $(id){ return document.getElementById(id); }
+  function el(tag, cls, html){ var d = document.createElement(tag); if (cls) d.className = cls; if (html !== undefined) d.innerHTML = html; return d; }
+
+  function toast(text, type){
+    var wrap = $("toastWrap");
+    var t = el("div", "toast" + (type ? " " + type : ""), escapeHtml(text));
+    wrap.appendChild(t);
+    setTimeout(function(){ t.classList.add("show"); }, 10);
+    setTimeout(function(){
+      t.classList.remove("show");
+      setTimeout(function(){ t.remove(); }, 300);
+    }, 2600);
+  }
+
+  function copyText(text){
+    function done(){ toast("Скопировано"); }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){
+        var ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch(e){}
+        document.body.removeChild(ta); done();
+      });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch(e){}
+      document.body.removeChild(ta); done();
+    }
+  }
+
+  /* ---------- theme ---------- */
+  function applyTheme(t){
+    document.documentElement.setAttribute("data-theme", t);
+    $("iconSun").classList.toggle("hidden", t === "light");
+    $("iconMoon").classList.toggle("hidden", t === "dark");
+    try { localStorage.setItem("algTheme", t); } catch(e){}
+  }
+  var savedTheme = "dark";
+  try { savedTheme = localStorage.getItem("algTheme") || "dark"; } catch(e){}
+  applyTheme(savedTheme);
+  $("themeToggle").addEventListener("click", function(){
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  });
+
+  /* ---------- scroll top ---------- */
+  var scrollTopBtn = $("scrollTopBtn");
+  window.addEventListener("scroll", function(){
+    scrollTopBtn.classList.toggle("show", window.scrollY > 450);
+  }, { passive: true });
+  scrollTopBtn.addEventListener("click", function(){ window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+  function buildChips(containerId, current, onclick){
+    var c = $(containerId); c.innerHTML = "";
+    for (var g = 1; g <= 11; g++){
+      (function(grade){
+        var b = el("button", "chip" + (grade === current ? " active" : ""));
+        b.innerHTML = grade + "<small>класс</small>";
+        b.setAttribute("aria-pressed", grade === current ? "true" : "false");
+        b.addEventListener("click", function(){ onclick(grade); });
+        c.appendChild(b);
+      })(g);
+    }
+  }
+
+  /* ================= ПРАКТИКА ================= */
+  var curr = { grade: 7, topic: 0, mode: "std", customItems: [], customIdx: 0, customCurrent: null };
+  try { var savedGP = parseInt(localStorage.getItem("algGrPractice"), 10); if (savedGP >= 1 && savedGP <= 11) curr.grade = savedGP; } catch(e){}
+  var subjectNow = (function(){ try { var s = localStorage.getItem("algSubject"); return (s === "math" || s === "rus") ? s : "math"; } catch(e){ return "math"; } })();
+  if (subjectNow === "rus") curr.grade = 1;
+  else { try { if (!localStorage.getItem("algGrMath")) localStorage.setItem("algGrMath", String(curr.grade)); } catch(e){} }
+  function subjectDB(){ return subjectNow === "rus" ? DBRU : DB; }
+  function subjectName(){ return subjectNow === "rus" ? "русскому языку" : "алгебре"; }
+  function syncRuKeypad(){
+    var on = subjectNow === "rus";
+    var m = $("mathKeypad"), r = $("ruKeypad");
+    if (m) m.classList.toggle("hidden", on);
+    if (r) r.classList.toggle("hidden", !on);
+    var me = $("examMathKeypad"), re = $("examRuKeypad");
+    if (me) me.classList.toggle("hidden", on);
+    if (re) re.classList.toggle("hidden", !on);
+    $("answer").setAttribute("inputmode", on ? "" : "decimal");
+    $("answer").setAttribute("placeholder", on ? "Ваш ответ (словом)" : "Ваш ответ (1/2 или 0,5)");
+    $("examAnswer").setAttribute("placeholder", on ? "Ваш ответ (словом)" : "Ваш ответ (дробь: 1/2 или 0,5)");
+  }
+  function switchSubject(s){
+    subjectNow = s;
+    try { localStorage.setItem("algSubject", s); } catch(e){}
+    document.querySelectorAll("#subjectChips .chip").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-s") === s); });
+    curr.grade = (s === "rus" ? 1 : (function(){ var g = 7; try { g = parseInt(localStorage.getItem("algGrMath"), 10); } catch(e){} return (g >= 1 && g <= 11) ? g : 7; })());
+    curr.topic = 0; curr.mode = "std";
+    try { localStorage.setItem("algGrPractice", String(curr.grade)); } catch(e){}
+    document.querySelectorAll("#gradesPractice .chip").forEach(function(elm, i){ elm.classList.toggle("active", i + 1 === curr.grade); elm.setAttribute("aria-pressed", i + 1 === curr.grade ? "true" : "false"); });
+    document.querySelectorAll("#gradesExam .chip").forEach(function(elm, i){ elm.classList.toggle("active", i + 1 === examGrade); elm.setAttribute("aria-pressed", i + 1 === examGrade ? "true" : "false"); });
+    syncRuKeypad();
+    trainerCard.classList.add("hidden");
+    loadScore();
+    buildTopics();
+    updateExamBadge();
+    renderExamHistory();
+    updateExamBest();
+    buildSuggestions();
+    toast("Предмет: " + (s === "rus" ? "русский язык" : "алгебра"), "ok");
+  }
+  document.querySelectorAll("#subjectChips .chip").forEach(function(b){
+    b.addEventListener("click", function(){
+      if (b.getAttribute("data-s") === subjectNow) return;
+      if (!$("examCard").classList.contains("hidden")){ toast("Завершите текущий тест", "warn"); return; }
+      switchSubject(b.getAttribute("data-s"));
+    });
+  });
+  (function(){ document.querySelectorAll("#subjectChips .chip").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-s") === subjectNow); }); })();
+  syncRuKeypad();
+
+  var score = { correct: 0, wrong: 0, streak: 0, total: 0, best: 0 };
+  var scoreMap = {};
+  var answered = false;
+  var lastWrongUser = null;
+  var optMode = true;
+  var practiceState = { options: null };
+
+  var trainerCard = $("trainerCard");
+  var problemEl = $("problem"), answerEl = $("answer"), feedbackEl = $("feedback");
+  var correctEl = $("correct"), wrongEl = $("wrong"), streakEl = $("streak"), bestEl = $("best"), accuracyEl = $("accuracy");
+  var progressBar = $("progressBar");
+
+  function scoreKey(){ if (curr.mode === "custom") return (subjectNow === "rus" ? "rus:" : "") + "custom"; return (subjectNow === "rus" ? "rus:" : "") + curr.grade + ":" + curr.topic; }
+
+  function loadScore(){
+    try { scoreMap = JSON.parse(localStorage.getItem("algScoreMap") || "{}") || {}; } catch(e){ scoreMap = {}; }
+    score = scoreMap[scoreKey()] || { correct: 0, wrong: 0, streak: 0, total: 0, best: 0 };
+    updateStats();
+  }
+  function saveScore(){
+    scoreMap[scoreKey()] = score;
+    try { localStorage.setItem("algScoreMap", JSON.stringify(scoreMap)); } catch(e){}
+  }
+  function resetScore(){
+    score = { correct: 0, wrong: 0, streak: 0, total: 0, best: 0 };
+    saveScore(); updateStats();
+    toast("Счёт темы сброшен", "ok");
+  }
+  function updateStats(){
+    correctEl.textContent = score.correct;
+    wrongEl.textContent = score.wrong;
+    streakEl.textContent = score.streak;
+    bestEl.textContent = score.best || 0;
+    var total = score.correct + score.wrong;
+    var pct = total ? Math.round(score.correct / total * 100) : 0;
+    accuracyEl.textContent = pct + "%";
+    progressBar.style.width = pct + "%";
+  }
+
+  function loadOptMode(){
+    try { optMode = localStorage.getItem("algOptMode") !== "0"; } catch(e){}
+    $("optionToggle").checked = optMode;
+  }
+  loadOptMode();
+  $("optionToggle").addEventListener("change", function(){
+    optMode = this.checked;
+    try { localStorage.setItem("algOptMode", optMode ? "1" : "0"); } catch(e){}
+    if (!trainerCard.classList.contains("hidden") && !answered) generate();
+  });
+
+  buildChips("gradesPractice", curr.grade, selectGrade);
+
+  function selectGrade(g){
+    curr.grade = g; curr.topic = 0; curr.mode = "std";
+    try { localStorage.setItem("algGrPractice", String(g)); } catch(e){}
+    if (subjectNow === "math"){ try { localStorage.setItem("algGrMath", String(g)); } catch(e){} }
+    document.querySelectorAll("#gradesPractice .chip").forEach(function(elm, i){ elm.classList.toggle("active", i + 1 === g); elm.setAttribute("aria-pressed", i + 1 === g ? "true" : "false"); });
+    trainerCard.classList.add("hidden");
+    loadScore();
+    buildTopics();
+  }
+
+  var showAllTopics = false;
+
+  function buildTopics(){
+    var topicsEl = $("topics"); topicsEl.innerHTML = "";
+    var db = subjectDB();
+    if (showAllTopics){
+      var total = 0;
+      Object.keys(db).forEach(function(g){ total += db[g].length; });
+      $("topicCount").textContent = "" + total;
+      Object.keys(db).forEach(function(g){
+        var sep = el("div", "grade-sep", g + " класс (" + db[g].length + ")");
+        topicsEl.appendChild(sep);
+        db[g].forEach(function(t, i){
+          var isActive = (curr.grade == g && i === curr.topic);
+          var b = el("button", "topic-btn" + (isActive ? " active" : ""), escapeHtml(t.name));
+          b.addEventListener("click", (function(gr, idx){
+            return function(){ curr.grade = Number(gr); curr.topic = idx; showAllTopics = false; $("allTopicsBtn").textContent = "📋 Все темы"; buildTopics(); updateGradeChips(); selectTopic(idx); };
+          })(g, i));
+          topicsEl.appendChild(b);
+        });
+      });
+    } else {
+      var list = db[curr.grade] || [];
+      $("topicCount").textContent = "" + list.length;
+      list.forEach(function(t, i){
+        var b = el("button", "topic-btn" + (i === curr.topic ? " active" : ""), escapeHtml(t.name));
+        b.addEventListener("click", function(){ selectTopic(i); });
+        topicsEl.appendChild(b);
+      });
+    }
+  }
+
+  function updateGradeChips(){
+    document.querySelectorAll("#gradesPractice .chip").forEach(function(elm, i){ elm.classList.toggle("active", i + 1 === curr.grade); elm.setAttribute("aria-pressed", i + 1 === curr.grade ? "true" : "false"); });
+  }
+
+  $("allTopicsBtn").addEventListener("click", function(){
+    showAllTopics = !showAllTopics;
+    this.textContent = showAllTopics ? "✕ Текущий класс" : "📋 Все темы";
+    buildTopics();
+  });
+
+  function selectTopic(i){
+    curr.topic = i; curr.mode = "std";
+    document.querySelectorAll("#topics .topic-btn").forEach(function(elm, j){ elm.classList.toggle("active", j === i); });
+    $("taskList").innerHTML = ""; $("backToNormal").classList.add("hidden");
+    trainerCard.classList.remove("hidden");
+    loadScore();
+    generate();
+  }
+  loadScore();
+
+  function practiceTopicName(){
+    if (curr.mode === "custom") return "Свои задания";
+    var list = subjectDB()[curr.grade];
+    return list && list[curr.topic] ? list[curr.topic].name : "Тренажёр";
+  }
+
+  function setupPracticeAnswer(expected, presetOpts){
+    var opt = (presetOpts && presetOpts.length && optMode) ? labelOptions(presetOpts, expected) : (optMode ? makeOptions(expected) : null);
+    practiceState.options = opt;
+    var oc = $("practiceOptions");
+    oc.innerHTML = "";
+    answerEl.value = "";
+    answerEl.disabled = false; $("checkBtn").disabled = false;
+    var letters = ["А", "Б", "В", "Г"];
+    if (opt){
+      $("optNextBtn").classList.remove("hidden");
+      opt.forEach(function(o, i){
+        var b = el("button", "opt", "<span class='opt-letter'>" + letters[i] + ")</span> " + escapeHtml(o.label));
+        b.setAttribute("data-i", i);
+        b.addEventListener("click", function(){ pickPracticeOption(i); });
+        oc.appendChild(b);
+      });
+      oc.classList.remove("hidden");
+      $("practiceTyped").classList.add("hidden");
+      $("manualLinkWrap").classList.remove("hidden");
+      $("manualLink").classList.remove("hidden");
+      $("manualLinkBack").classList.add("hidden");
+    } else {
+      oc.classList.add("hidden");
+      $("optNextBtn").classList.add("hidden");
+      $("practiceTyped").classList.remove("hidden");
+      $("manualLinkWrap").classList.add("hidden");
+      answerEl.focus();
+    }
+  }
+
+  function toManual(){
+    if (answered || !practiceState.options) return;
+    $("practiceOptions").classList.add("hidden");
+    $("optNextBtn").classList.add("hidden");
+    $("practiceTyped").classList.remove("hidden");
+    $("manualLink").classList.add("hidden");
+    $("manualLinkBack").classList.remove("hidden");
+    answerEl.focus();
+  }
+  function toOptions(){
+    if (answered || !practiceState.options) return;
+    $("practiceOptions").classList.remove("hidden");
+    $("optNextBtn").classList.remove("hidden");
+    $("practiceTyped").classList.add("hidden");
+    $("manualLink").classList.remove("hidden");
+    $("manualLinkBack").classList.add("hidden");
+  }
+  $("manualLink").addEventListener("click", toManual);
+
+  function generate(){
+    answered = false;
+    $("explainErrorWrap").classList.add("hidden");
+    $("practiceTyped").classList.remove("hidden");
+    $("practiceOptions").classList.add("hidden");
+    $("manualLinkWrap").classList.add("hidden");
+    answerEl.disabled = false; $("checkBtn").disabled = false;
+    answerEl.value = "";
+    practiceState.options = null;
+    $("optNextBtn").classList.add("hidden");
+
+    if (curr.mode === "custom"){
+      if (curr.customIdx >= curr.customItems.length){
+        problemEl.innerHTML = "Все задания завершены! Нажмите «Дальше», чтобы начать заново, или загрузите новый файл.";
+        $("practiceTopicLabel").textContent = "Свои задания";
+        answerEl.disabled = true; $("checkBtn").disabled = true;
+        feedbackEl.textContent = ""; feedbackEl.className = "feedback";
+        return;
+      }
+      curr.customCurrent = curr.customItems[curr.customIdx];
+      problemEl.innerHTML = renderCustom(curr.customCurrent.q);
+      $("practiceTopicLabel").textContent = "Свои задания";
+      if (curr.customCurrent.answer === true || typeof curr.customCurrent.answer !== "string"){
+        answerEl.disabled = true; $("checkBtn").disabled = true;
+        feedbackEl.innerHTML = "Открытое задание (без автоматической проверки) — ответьте сами и нажмите «Дальше».";
+        feedbackEl.className = "feedback good";
+        return;
+      }
+      answerEl.focus();
+      setupPracticeAnswer(curr.customCurrent.answer);
+      return;
+    }
+
+    $("practiceTopicLabel").textContent = (curr.grade) + " класс · " + practiceTopicName();
+    var q = subjectDB()[curr.grade][curr.topic].gen();
+    curr.customCurrent = null;
+    problemEl.innerHTML = q.html;
+    problemEl.setAttribute("data-answer", q.answer);
+    feedbackEl.textContent = ""; feedbackEl.className = "feedback";
+    if (q.options){ setupPracticeAnswer(q.answer, q.options); }
+    else { setupPracticeAnswer(q.answer); }
+  }
+
+  function renderCustom(q){
+    return escapeHtml(q).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  }
+
+  function gradeAnswer(value, expected, customMode){
+    score.total++;
+    var correct = customMode ? matchCustom(value, expected) : isCorrect(value, expected);
+    if (correct){
+      score.correct++; score.streak++;
+      var fb = "Верно!";
+      if ([5, 10, 15, 20, 25, 50].indexOf(score.streak) >= 0) fb += " Серия " + score.streak + " — так держать!";
+      feedbackEl.innerHTML = fb;
+      feedbackEl.className = "feedback good";
+    } else {
+      score.wrong++; score.streak = 0;
+      lastWrongUser = value;
+      feedbackEl.innerHTML = "Неверно. Правильный ответ: <b>" + escapeHtml(expected) + "</b>";
+      feedbackEl.className = "feedback bad";
+      $("explainErrorWrap").classList.remove("hidden");
+    }
+    if (score.streak > (score.best || 0)) score.best = score.streak;
+    answered = true;
+    answerEl.disabled = true; $("checkBtn").disabled = true;
+    saveScore(); updateStats();
+  }
+
+  function checkAnswer(){
+    if (answered){ showNext(); return; }
+    if (curr.mode === "custom" && curr.customCurrent){
+      if (curr.customCurrent.answer === true || typeof curr.customCurrent.answer !== "string"){ showNext(); return; }
+    }
+    var inp = answerEl.value.trim();
+    if (!inp){ answerEl.focus(); return; }
+    var expected = curr.mode === "custom" && curr.customCurrent ? curr.customCurrent.answer : (problemEl.getAttribute("data-answer") || "");
+    gradeAnswer(inp, expected, !!(curr.mode === "custom" && curr.customCurrent));
+  }
+
+  function pickPracticeOption(i){
+    if (answered || !practiceState.options) return;
+    var o = practiceState.options[i];
+    var expected = curr.mode === "custom" && curr.customCurrent ? curr.customCurrent.answer : (problemEl.getAttribute("data-answer") || "");
+    gradeAnswer(o.label, expected, !!(curr.mode === "custom" && curr.customCurrent));
+    var bs = $("practiceOptions").querySelectorAll(".opt");
+    bs.forEach(function(b){ b.disabled = true; });
+    bs.forEach(function(b, j){
+      if (practiceState.options[j].correct) b.classList.add("isCorrect");
+    });
+    bs[i].classList.add("chosen");
+    if (!o.correct) bs[i].classList.add("isWrong");
+  }
+
+  function showNext(){
+    if (curr.mode === "custom" && curr.customItems.length) curr.customIdx++;
+    generate();
+  }
+
+  function hintAnswer(){
+    if (trainerCard.classList.contains("hidden")) return;
+    var exp = problemEl.getAttribute("data-answer") || "";
+    if (curr.mode === "custom" && curr.customCurrent) exp = curr.customCurrent.answer;
+    if (!exp) return;
+    feedbackEl.innerHTML = "Ответ: <b>" + escapeHtml(exp) + "</b>";
+    feedbackEl.className = "feedback bad";
+    if (practiceState.options){
+      var bs = $("practiceOptions").querySelectorAll(".opt");
+      bs.forEach(function(b, j){
+        if (practiceState.options[j].correct){
+          b.classList.add("isCorrect");
+        }
+      });
+    }
+  }
+
+  $("checkBtn").addEventListener("click", checkAnswer);
+  $("nextBtn").addEventListener("click", showNext);
+  $("optNextBtn").addEventListener("click", showNext);
+  $("hintBtn").addEventListener("click", hintAnswer);
+  $("resetBtn").addEventListener("click", resetScore);
+  answerEl.addEventListener("keydown", function(e){
+    if (e.key === "Enter"){ e.preventDefault(); checkAnswer(); }
+  });
+  document.querySelectorAll(".key").forEach(function(k){
+    k.addEventListener("click", function(){
+      if (answerEl.disabled) return;
+      var v = k.getAttribute("data-k");
+      if (v === "back"){ answerEl.value = answerEl.value.slice(0, -1); }
+      else { answerEl.value += v; }
+      answerEl.focus();
+    });
+  });
+
+  /* ================= СВОИ ЗАДАНИЯ ================= */
+  var uploadArea = $("uploadArea"), fileInput = $("fileInput");
+  uploadArea.addEventListener("click", function(){ fileInput.click(); });
+  ["dragover","dragenter"].forEach(function(ev){
+    uploadArea.addEventListener(ev, function(e){ e.preventDefault(); uploadArea.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    uploadArea.addEventListener(ev, function(e){ e.preventDefault(); uploadArea.classList.remove("drag"); });
+  });
+  uploadArea.addEventListener("drop", function(e){
+    if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener("change", function(){
+    if (fileInput.files.length) loadFile(fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  function loadFile(file){
+    var reader = new FileReader();
+    reader.onload = function(ev){ parseAndImport(ev.target.result, file.name); };
+    reader.readAsText(file, "utf-8");
+  }
+
+  function parseAndImport(text, fname){
+    try {
+      var items = [];
+      var ext = (fname || "").split(".").pop().toLowerCase();
+      if (ext === "json"){
+        var arr = JSON.parse(text);
+        if (!Array.isArray(arr)) throw new Error("JSON должен быть массивом");
+        items = arr.map(function(o, i){
+          var q = o.q || o.question || o.task || o.w;
+          var a = o.a !== undefined ? o.a : (o.answer !== undefined ? o.answer : true);
+          return { q: String(q || ("Задание " + (i + 1))), answer: a };
+        });
+      } else {
+        var lines = text.split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
+        if (lines.length && /^(q|вопрос|question|w)[;\|\t,]/.test(lines[0].toLowerCase())) lines = lines.slice(1);
+        items = lines.map(function(line){
+          var sep = line.indexOf(";") >= 0 ? ";" : (line.indexOf("|") >= 0 ? "|" : (line.indexOf("\t") >= 0 ? "\t" : ","));
+          if (sep === "," && (line.match(/,/g) || []).length > 1) sep = ";";
+          var parts = line.split(sep).map(function(s){ return s.trim(); });
+          if (parts.length >= 2) return { q: parts[0], answer: parts.slice(1).join(",") };
+          return { q: line, answer: true };
+        });
+      }
+      if (!items.length) throw new Error("Заданий не найдено");
+      curr.customItems = items; curr.customIdx = 0; curr.mode = "custom"; answered = false;
+      renderTaskList();
+      trainerCard.classList.remove("hidden");
+      $("backToNormal").classList.remove("hidden");
+      loadScore();
+      feedbackEl.textContent = "Загружено заданий: " + items.length;
+      feedbackEl.className = "feedback good";
+      toast("Загружено заданий: " + items.length, "ok");
+    } catch(e){
+      feedbackEl.textContent = "Не удалось разобрать файл: " + e.message;
+      feedbackEl.className = "feedback bad";
+      toast("Не удалось разобрать файл", "err");
+    }
+  }
+
+  function renderTaskList(){
+    $("taskList").innerHTML = "";
+    var h = el("div", "task-item", "<b>Загружено заданий: " + curr.customItems.length + "</b>");
+    var delAll = el("button", "del", "\u00d7");
+    delAll.title = "Удалить все";
+    delAll.addEventListener("click", clearCustom);
+    h.appendChild(delAll);
+    $("taskList").appendChild(h);
+    curr.customItems.slice(0, 3).forEach(function(it, i){
+      $("taskList").appendChild(el("div", "task-item", "<span>" + (i + 1) + ". " + escapeHtml(String(it.q)).slice(0, 60) + "</span>"));
+    });
+    if (curr.customItems.length > 3){
+      $("taskList").appendChild(el("div", "upload-note", "и ещё " + (curr.customItems.length - 3) + " задани(й/я)"));
+    }
+    loadScore();
+    generate();
+  }
+
+  function clearCustom(){
+    curr.customItems = []; curr.mode = "std"; curr.customIdx = 0; answered = false;
+    $("taskList").innerHTML = "";
+    $("backToNormal").classList.add("hidden");
+    problemEl.textContent = "Выберите тему, чтобы начать";
+    trainerCard.classList.add("hidden");
+  }
+
+  $("backToNormal").addEventListener("click", function(){
+    curr.mode = "std"; curr.customIdx = 0;
+    $("taskList").innerHTML = "";
+    $("backToNormal").classList.add("hidden");
+    buildTopics();
+    selectTopic(curr.topic);
+  });
+
+  function matchCustom(user, expected){
+    var s = String(expected).trim();
+    var u = evaluate(user);
+    var e = evaluate(s);
+    if (u !== null && e !== null){ var tol = s.indexOf("/") >= 0 ? 0.005 : 1e-6; return Math.abs(u - e) < tol; }
+    if (/[;,]/.test(s)){
+      var eps = s.split(/[;,\s]+/);
+      var ups = String(user).split(/[;,\s]+/);
+      if (eps.length === ups.length){
+        var allOk = true;
+        for (var i = 0; i < eps.length; i++){
+          var eu = evaluate(eps[i]), uu = evaluate(ups[i]);
+          if (eu === null || uu === null || Math.abs(uu - eu) > 0.005){ allOk = false; break; }
+        }
+        if (allOk) return true;
+      }
+    }
+    return String(user).trim().toLowerCase() === s.toLowerCase();
+  }
+
+  /* ================= ИТОГОВЫЙ ТЕСТ ================= */
+  var examGrade = 7;
+  try { var savedGE = parseInt(localStorage.getItem("algGrExam"), 10); if (savedGE >= 1 && savedGE <= 11) examGrade = savedGE; } catch(e){}
+  var exam = { items: [], idx: 0, answers: [], elapsed: 0, timer: null, wrongTopics: [] };
+
+  buildChips("gradesExam", examGrade, function(g){
+    examGrade = g;
+    try { localStorage.setItem("algGrExam", String(g)); } catch(e){}
+    document.querySelectorAll("#gradesExam .chip").forEach(function(elm, i){ elm.classList.toggle("active", i + 1 === g); elm.setAttribute("aria-pressed", i + 1 === g ? "true" : "false"); });
+    updateExamBest();
+  });
+
+  function makeOptions(correct){
+    var s = String(correct).trim();
+    var isInt = /^-?\d+$/.test(s);
+    var isFrac = /^-?\d+\/\d+$/.test(s);
+    var isDec = /^-?\d+\.\d+$/.test(s);
+    if (!(isInt || isFrac || isDec)) return null;
+    var correctStr = s, cands = [];
+    if (isInt){
+      var c = parseInt(s, 10);
+      cands = [String(c + ri(1,5)), String(c - ri(1,5)), String(c * ri(2,3)), String(c + (c >= 0 ? 10 : -10))];
+    } else if (isFrac){
+      var parts = s.split("/"); var n = parseInt(parts[0],10), d = parseInt(parts[1],10);
+      cands = [reduce(n + (n > 0 ? 1 : -1), d), reduce(n, d + 1), reduce(Math.abs(n) + 2, d), reduce(n * 2, d)];
+    } else {
+      var f = parseFloat(s);
+      cands = [fmt(round2(f + 1)), fmt(round2(f - 1)), fmt(round2(f + 0.5)), fmt(round2(f * 2))];
+    }
+    var pool = [];
+    for (var i = 0; i < cands.length && pool.length < 3; i++){
+      var cand = cands[i];
+      if (cand === correctStr || pool.indexOf(cand) >= 0) continue;
+      pool.push(cand);
+    }
+    var fill = 1;
+    while (pool.length < 3 && fill < 30){
+      var alt = isInt ? String(c + (fill++ * (c >= 0 ? 1 : -1))) : "";
+      if (alt && alt !== correctStr && pool.indexOf(alt) < 0) pool.push(alt);
+      else if (isFrac || isDec){ var tv = fmt(round2(parseFloat(evaluate(s)) + 0.5 * fill)); if (tv !== correctStr && pool.indexOf(tv) < 0) pool.push(tv); }
+      fill++;
+    }
+    var options = shuffleArr(pool.concat([correctStr]));
+    return options.map(function(o){ return { label: o, correct: o === correctStr }; });
+  }
+
+  function labelOptions(labels, answer){
+    var seen = {};
+    var arr = labels.filter(function(x){ if (seen[x]) return false; seen[x] = true; return true; });
+    var others = shuffleArr(arr.filter(function(x){ return x !== answer; })).slice(0, 3);
+    return shuffleArr(others.concat([answer])).map(function(o){ return { label: o, correct: o === answer }; });
+  }
+
+  function runExamItems(items){
+    exam.items = items; exam.idx = 0; exam.answers = []; exam.elapsed = 0; exam.wrongTopics = [];
+    if (exam.timer) clearInterval(exam.timer);
+    exam.timer = setInterval(function(){
+      exam.elapsed++;
+      $("examTimer").textContent = fmtTime(exam.elapsed);
+    }, 1000);
+    $("examSetupCard").classList.add("hidden");
+    $("examResultCard").classList.add("hidden");
+    $("examCard").classList.remove("hidden");
+    renderExamQuestion();
+  }
+
+  function startExam(){
+    var len = parseInt($("examLen").value, 10) || 10;
+    var topics = (subjectDB()[examGrade] || []).slice();
+    if (!topics.length){ $("examHint").textContent = "Для этого класса пока нет тем."; return; }
+    shuffleArr(topics);
+    var items = [];
+    for (var i = 0; i < len; i++){
+      var t = topics[i % topics.length];
+      var q = t.gen();
+      var opts = q.options ? labelOptions(q.options, q.answer) : makeOptions(q.answer);
+      items.push({ html: q.html, answer: q.answer, topic: t.name, options: opts });
+    }
+    runExamItems(items);
+  }
+
+  function fixExamMistakes(){
+    var src = (exam.review || []).filter(function(r){ return !r.ok; });
+    if (!src.length){ toast("Ошибок нет — повторять нечего", "ok"); return; }
+    var items = src.map(function(r){
+      var t = (subjectDB()[examGrade] || []).filter(function(x){ return x.name === r.item.topic; })[0];
+      if (t){ var q = t.gen(); var o = q.options ? labelOptions(q.options, q.answer) : makeOptions(q.answer); return { html: q.html, answer: q.answer, topic: t.name, options: o }; }
+      return r.item;
+    });
+    runExamItems(items);
+  }
+
+  function fmtTime(sec){
+    var mm = Math.floor(sec / 60), ss = sec % 60;
+    return (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+
+  function renderExamQuestion(){
+    var it = exam.items[exam.idx];
+    var isLast = exam.idx === exam.items.length - 1;
+    $("examCounter").innerHTML = "Вопрос <b>" + (exam.idx + 1) + "</b> из <b>" + exam.items.length + "</b>";
+    $("examTopicLabel").textContent = it.topic;
+    $("examProgress").style.width = ((exam.idx + 1) / exam.items.length * 100) + "%";
+    $("examProblem").innerHTML = it.html;
+    $("examFeedback").textContent = ""; $("examFeedback").className = "feedback";
+    $("examBackBtn").classList.toggle("hidden", exam.idx === 0);
+    $("examNextBtn").textContent = isLast ? "Завершить" : "Дальше";
+    $("examNextBtn").disabled = true;
+
+    var dots = $("examDots"); dots.innerHTML = "";
+    exam.items.forEach(function(item, i){
+      var d = el("span", "dot");
+      if (i === exam.idx) d.classList.add("cur");
+      else if (exam.answers[i] !== undefined) d.classList.add(exam.answers[i] === null || !isCorrect(exam.answers[i], item.answer) ? "no" : "ok");
+      dots.appendChild(d);
+    });
+
+    var optsWrap = $("examOptions");
+    optsWrap.innerHTML = "";
+    var typedWrap = $("examTyped");
+    if (it.options && it.options.length){
+      optsWrap.classList.remove("hidden");
+      typedWrap.classList.add("hidden");
+      it.options.forEach(function(o, i){
+        var b = el("button", "opt", "<span class='opt-letter'>" + ["А","Б","В","Г"][i] + ")</span> " + escapeHtml(o.label));
+        b.dataset.i = i;
+        b.addEventListener("click", function(){ chooseExamOption(i); });
+        optsWrap.appendChild(b);
+      });
+      var prev = exam.answers[exam.idx];
+      if (prev !== undefined){
+        var bs = optsWrap.querySelectorAll(".opt");
+        bs.forEach(function(b){ b.disabled = true; });
+        bs.forEach(function(b, j){
+          if (it.options[j].correct) b.classList.add("isCorrect");
+          if (prev === it.options[j].label) b.classList.add("chosen");
+        });
+        $("examFeedback").innerHTML = prev === null ? "Пропущено. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>"
+          : (isCorrect(prev, it.answer) ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>");
+        $("examFeedback").className = "feedback " + (prev !== null && isCorrect(prev, it.answer) ? "good" : "bad");
+        $("examNextBtn").disabled = false;
+      }
+    } else {
+      optsWrap.classList.add("hidden");
+      typedWrap.classList.remove("hidden");
+      $("examAnswer").value = "";
+      $("examAnswer").disabled = false;
+      $("examCheckBtn").disabled = false;
+      var prevT = exam.answers[exam.idx];
+      if (prevT !== undefined){
+        if (prevT !== null) $("examAnswer").value = prevT;
+        $("examAnswer").disabled = true; $("examCheckBtn").disabled = true;
+        $("examFeedback").innerHTML = prevT === null ? "Пропущено. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>"
+          : (isCorrect(prevT, it.answer) ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>");
+        $("examFeedback").className = "feedback " + (prevT !== null && isCorrect(prevT, it.answer) ? "good" : "bad");
+        $("examNextBtn").disabled = false;
+      } else {
+        $("examAnswer").focus();
+      }
+    }
+  }
+
+  function chooseExamOption(i){
+    var it = exam.items[exam.idx];
+    if (exam.answers[exam.idx] !== undefined) return;
+    exam.answers[exam.idx] = it.options[i].label;
+    renderAnswersMark();
+  }
+
+  function renderAnswersMark(){
+    var it = exam.items[exam.idx];
+    var right = exam.answers[exam.idx] !== null && isCorrect(exam.answers[exam.idx], it.answer);
+    $("examFeedback").innerHTML = right ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>";
+    $("examFeedback").className = "feedback " + (right ? "good" : "bad");
+    if (exam.answers[exam.idx] !== null){
+      var bs = $("examOptions").querySelectorAll(".opt");
+      bs.forEach(function(b){ b.disabled = true; });
+      bs.forEach(function(b, j){
+        if (it.options[j].correct) b.classList.add("isCorrect");
+        if (exam.answers[exam.idx] === it.options[j].label) b.classList.add("chosen");
+      });
+    }
+    var dots = $("examDots").querySelectorAll(".dot");
+    if (dots[exam.idx]){
+      dots[exam.idx].classList.remove("cur");
+      dots[exam.idx].classList.add(right ? "ok" : "no");
+    }
+    $("examNextBtn").disabled = false;
+  }
+
+  function checkExamTyped(){
+    var it = exam.items[exam.idx];
+    if (exam.answers[exam.idx] !== undefined) return;
+    var inp = $("examAnswer").value.trim();
+    if (!inp){ $("examAnswer").focus(); return; }
+    exam.answers[exam.idx] = inp;
+    $("examAnswer").disabled = true; $("examCheckBtn").disabled = true;
+    var right = isCorrect(inp, it.answer);
+    $("examFeedback").innerHTML = right ? "Верно!" : "Неверно. Правильный ответ: <b>" + escapeHtml(it.answer) + "</b>";
+    $("examFeedback").className = "feedback " + (right ? "good" : "bad");
+    var dots = $("examDots").querySelectorAll(".dot");
+    if (dots[exam.idx]){
+      dots[exam.idx].classList.remove("cur");
+      dots[exam.idx].classList.add(right ? "ok" : "no");
+    }
+    $("examNextBtn").disabled = false;
+  }
+
+  function examBack(){
+    if (exam.idx > 0){ exam.idx--; renderExamQuestion(); }
+  }
+
+  function examNext(){
+    if (exam.answers[exam.idx] === undefined){ skipexam(); return; }
+    exam.idx++;
+    if (exam.idx >= exam.items.length){ finishExam(); return; }
+    renderExamQuestion();
+  }
+
+  function skipexam(){
+    exam.answers[exam.idx] = null;
+    exam.idx++;
+    if (exam.idx >= exam.items.length){ finishExam(); return; }
+    renderExamQuestion();
+  }
+
+  function finishExam(){
+    if (exam.timer) clearInterval(exam.timer);
+    var total = exam.items.length;
+    var correctCount = 0;
+    var wrongTopics = [];
+    exam.review = [];
+    for (var i = 0; i < total; i++){
+      var it = exam.items[i];
+      var ua = exam.answers[i];
+      var ok = ua && isCorrect(ua, it.answer);
+      if (ok) correctCount++;
+      else if (exam.items[i].topic && wrongTopics.indexOf(it.topic) < 0) wrongTopics.push(it.topic);
+      exam.review.push({ item: it, user: ua ? ua : "—", ok: !!ok });
+    }
+    var pct = total ? Math.round(correctCount / total * 100) : 0;
+    var grade, cap;
+    if (pct >= 90){ grade = 5; cap = "отлично"; }
+    else if (pct >= 70){ grade = 4; cap = "хорошо"; }
+    else if (pct >= 50){ grade = 3; cap = "удовлетворительно"; }
+    else { grade = 2; cap = "нужно подтянуть"; }
+
+    $("resPercent").textContent = pct + "%";
+    var circ = 2 * Math.PI * 58;
+    var ring = $("resRing");
+    ring.style.strokeDashoffset = 364.4;
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ ring.style.strokeDashoffset = circ * (1 - pct / 100); });
+    });
+    $("resGrade").textContent = grade;
+    $("resGrade").className = "grade-big g" + grade;
+    $("resGradeCap").textContent = cap;
+    $("resCorrect").textContent = correctCount;
+    $("resTotal").textContent = total;
+    $("resTime").textContent = fmtTime(exam.elapsed);
+    $("resWeak").textContent = wrongTopics.length;
+
+    var reviewEl = $("examReview"); reviewEl.innerHTML = "";
+    exam.review.forEach(function(r, i){
+      var mark = r.ok ? "✓" : "✗";
+      var row = el("div", "rev-item");
+      row.appendChild(el("div", "rev-mark " + (r.ok ? "ok" : "no"), mark));
+      var body = el("div");
+      body.appendChild(el("div", "rev-topic", escapeHtml(r.item.topic)));
+      body.appendChild(el("div", "rev-q", r.item.html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()));
+      var a = el("div", "rev-a", "Ваш ответ: " + (r.user === "—" ? "—" : escapeHtml(r.user)) + " · Правильно: <b>" + escapeHtml(r.item.answer) + "</b>");
+      body.appendChild(a);
+      row.appendChild(body);
+      reviewEl.appendChild(row);
+    });
+
+    exam.wrongTopics = wrongTopics;
+    var fixBtn = $("examFixBtn");
+    var bad = total - correctCount;
+    fixBtn.classList.toggle("hidden", bad === 0);
+    fixBtn.textContent = "Повторить ошибки (" + bad + ")";
+    $("examCard").classList.add("hidden");
+    $("examResultCard").classList.remove("hidden");
+    $("examSetupCard").classList.remove("hidden");
+
+    saveExamHistory(examGrade, pct, grade, correctCount, total);
+    renderExamHistory();
+    updateExamBest();
+    if (grade === 5) confetti();
+    setTimeout(function(){ $("examResultCard").scrollIntoView({ behavior: "smooth", block: "start" }); }, 100);
+  }
+
+  function confetti(){
+    var colors = ["#4cc9f0", "#7c6ff0", "#2dd4bf", "#fbbf24", "#f87171", "#34d399"];
+    for (var i = 0; i < 70; i++){
+      (function(){
+        var p = document.createElement("div");
+        p.className = "confetti";
+        p.style.left = (Math.random() * 100) + "%";
+        p.style.width = (6 + Math.random() * 6) + "px";
+        p.style.height = (10 + Math.random() * 8) + "px";
+        p.style.background = colors[i % colors.length];
+        p.style.animationDelay = (Math.random() * 0.5) + "s";
+        p.style.animationDuration = (1.4 + Math.random() * 1.6) + "s";
+        p.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+        document.body.appendChild(p);
+        setTimeout(function(){ p.remove(); }, 3800);
+      })();
+    }
+  }
+
+  function examHistKey(){ return subjectNow === "rus" ? "algExamsRus" : "algExams"; }
+
+  function saveExamHistory(grade, pct, g, right, total){
+    var hist = []; try { hist = JSON.parse(localStorage.getItem(examHistKey()) || "[]") || []; } catch(e){}
+    hist.unshift({ date: new Date().toLocaleString("ru-RU", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}), grade: grade, pct: pct, g: g, right: right, total: total });
+    if (hist.length > 15) hist = hist.slice(0, 15);
+    try { localStorage.setItem(examHistKey(), JSON.stringify(hist)); } catch(e){}
+    updateExamBadge();
+  }
+
+  function updateExamBadge(){
+    var badge = $("examBadge");
+    try {
+      var hist = JSON.parse(localStorage.getItem(examHistKey()) || "[]") || [];
+      badge.textContent = hist.length;
+      badge.classList.toggle("hidden", hist.length === 0);
+    } catch(e){}
+  }
+
+  function updateExamBest(){
+    var hist = []; try { hist = JSON.parse(localStorage.getItem(examHistKey()) || "[]") || []; } catch(e){}
+    var m = {};
+    hist.forEach(function(h){ if (!m[h.grade] || h.pct > m[h.grade]) m[h.grade] = h.pct; });
+    var v = m[examGrade];
+    $("examBest").textContent = v !== undefined
+      ? "Лучший результат по " + subjectName() + " за " + examGrade + " класс: " + v + "%"
+      : "Тест по " + subjectName() + " за " + examGrade + " класс ещё не сдавался — попробуйте!";
+  }
+
+  function renderExamHistory(){
+    var hist = []; try { hist = JSON.parse(localStorage.getItem(examHistKey()) || "[]") || []; } catch(e){}
+    var wrap = $("examHistory"); wrap.innerHTML = "";
+    if (!hist.length){
+      wrap.appendChild(el("div", "upload-note", "Пока нет пройденных тестов. Запустите тест — результаты появятся здесь."));
+      return;
+    }
+    hist.forEach(function(h, i){
+      var row = el("div", "hist-item");
+      row.innerHTML = "<span>" + h.date + " · " + h.grade + " класс · " + h.right + "/" + h.total + "</span>" +
+        "<span class='hist-score g" + h.g + "'>" + h.g + " · " + h.pct + "%</span>";
+      var del = el("button", "hist-del", "\u00d7");
+      del.title = "Удалить запись";
+      del.addEventListener("click", function(){
+        hist.splice(i, 1);
+        try { localStorage.setItem(examHistKey(), JSON.stringify(hist)); } catch(e){}
+        renderExamHistory(); updateExamBadge(); updateExamBest();
+      });
+      row.appendChild(del);
+      wrap.appendChild(row);
+    });
+  }
+
+  $("startExamBtn").addEventListener("click", startExam);
+  $("examCheckBtn").addEventListener("click", checkExamTyped);
+  $("examAnswer").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); checkExamTyped(); } });
+  document.querySelectorAll(".key-exam").forEach(function(k){
+    k.addEventListener("click", function(){
+      var inp = $("examAnswer");
+      if (inp.disabled) return;
+      var v = k.getAttribute("data-k");
+      if (v === "back"){ inp.value = inp.value.slice(0, -1); }
+      else { inp.value += v; }
+      inp.focus();
+    });
+  });
+  $("examNextBtn").addEventListener("click", examNext);
+  $("examSkipBtn").addEventListener("click", skipexam);
+  $("examBackBtn").addEventListener("click", examBack);
+  $("examAbortBtn").addEventListener("click", function(){
+    var answeredCount = exam.answers.filter(function(a){ return a !== undefined; }).length;
+    if (answeredCount < exam.items.length && !confirm("Завершить тест досрочно? Неотвеченные вопросы засчитаются как ошибки.")) return;
+    finishExam();
+  });
+  $("examRetryBtn").addEventListener("click", function(){
+    $("examResultCard").classList.add("hidden");
+    startExam();
+  });
+  $("examFixBtn").addEventListener("click", function(){
+    $("examResultCard").classList.add("hidden");
+    fixExamMistakes();
+  });
+  $("histClear").addEventListener("click", function(){
+    try { localStorage.removeItem(examHistKey()); } catch(e){}
+    renderExamHistory(); updateExamBadge(); updateExamBest();
+  });
+  $("examAiBtn").addEventListener("click", function(){
+    if (!exam.wrongTopics || !exam.wrongTopics.length){
+      aiChatMsg("err", "Ошибок нет — тему объяснять нечего. Можете просто спросить.");
+      return;
+    }
+    var list = exam.wrongTopics.slice(0, 5).join(", ");
+    scrollToAIChat();
+    askAI(TUTOR_SYSTEM, "Ученик только что прошёл итоговый тест по " + subjectName() + " за " + examGrade + " класс и ошибся в темах: " + list + ". Объясни кратко и понятно основные правила этих тем, чтобы стало понятнее.");
+  });
+  $("examLen").addEventListener("change", function(){
+    updateExamBest();
+  });
+
+  /* ================= ВКЛАДКИ ================= */
+  function showTab(tab){
+    var isExam = tab === "exam";
+    $("tabPractice").classList.toggle("hidden", isExam);
+    $("tabExam").classList.toggle("hidden", !isExam);
+    $("tabPracticeNav").classList.toggle("active", !isExam);
+    $("tabExamNav").classList.toggle("active", isExam);
+  }
+  $("tabPracticeNav").addEventListener("click", function(){ showTab("practice"); });
+  $("tabExamNav").addEventListener("click", function(){ showTab("exam"); });
+
+  /* ================= ИИ-РЕПЕТИТОР ================= */
+  var TUTOR_SYSTEM = "Ты — доброжелательный репетитор для школьников 1-11 классов в тренажёре. Сейчас ученик занимается по " + subjectName() + ". Если предмет — русский язык: объясняй правила, орфограммы и грамматику. Если алгебра — объясняй математику. Отвечай по-русски, коротко и понятно, по шагам, при необходимости с примерами. Объясняй, как прийти к ответу самому и где ошибка, не раздражайся, подбадривай. Используй **жирный** текст и `код`.";
+  var AI_PRESETS = {
+    openai: { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini", keyNeeded: true, hint: "Ключ: <b>platform.openai.com</b> → API keys. Модели: gpt-4o-mini, gpt-4o." },
+    gemini: { url: "https://generativelanguage.googleapis.com", model: "gemini-3.6-flash", keyNeeded: true, native: true, hint: "<b>Важно:</b> Google Gemini API не работает из России и ряда стран без VPN (гео-блокировка). Если ошибка про location — выберите Ollama, DeepSeek или GigaChat." },
+    deepseek: { url: "https://api.deepseek.com/chat/completions", model: "deepseek-chat", keyNeeded: true, hint: "Ключ: <b>platform.deepseek.com</b> → API keys. Недорогой вариант. Модели: deepseek-chat, deepseek-reasoner." },
+    qwen: { url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", model: "qwen-plus", keyNeeded: true, hint: "Модели Alibaba (Qwen). Ключ: <b>bailian.console.alibabacloud.com</b>. Модели: qwen-plus, qwen-turbo, qwen-max." },
+    ollama: { url: "http://localhost:11434/v1/chat/completions", model: "qwen2.5:7b", keyNeeded: false, hint: "Без ключа и без VPN. Установите <b>ollama.com</b>, далее в терминале: <code>ollama pull qwen2.5</code>." },
+    grok: { url: "https://api.x.ai/v1/chat/completions", model: "grok-2-latest", keyNeeded: true, hint: "Ключ: <b>console.x.ai</b> → API Keys (платный). Модели: grok-2-latest, grok-4." },
+    giga: { url: "https://gigachat.devices.sberbank.ru/api/v1/chat/completions", model: "GigaChat-Pro", keyNeeded: true, hint: "Отечественный вариант. Ключ — в <b>developers.sber.ru</b>. OAuth-токен вставляйте в поле ключа." },
+    local: { url: "http://localhost:1234/v1/chat/completions", model: "", keyNeeded: false, hint: "Любой OpenAI-совместимый локальный сервер: LM Studio (порт 1234), llama.cpp, LiteLLM. Ключ обычно не нужен." }
+  };
+  var AI_PRESET_MODELS = {
+    openai: ["gpt-4o-mini", "gpt-4o"],
+    gemini: ["gemini-3.6-flash", "gemini-2.5-flash"],
+    deepseek: ["deepseek-chat", "deepseek-reasoner"],
+    qwen: ["qwen-plus", "qwen-turbo", "qwen-max"],
+    ollama: ["qwen2.5:7b", "llama3.1:8b", "gemma2:2b", "deepseek-r1:7b"],
+    grok: ["grok-2-latest"],
+    giga: ["GigaChat-Pro", "GigaChat-Max"],
+    local: []
+  };
+
+  var cfg = {};
+  var nativeOK = false;
+  var chatHistory = [];
+  var aiBusy = false;
+
+  function escChat(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function md(s){
+    return escChat(s)
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+  function addMsg(role, raw, typing){
+    var body = $("chatBody");
+    var div = el("div", "msg " + (role === "user" ? "user" : role === "err" ? "err" : typing ? "typing" : "ai"));
+    div.innerHTML = role === "user" ? escChat(raw) : (typing ? escChat(raw) : md(raw));
+    if (!typing && (role === "ai" || role === "err")){
+      var cp = el("button", "msg-copy", "Копировать");
+      cp.addEventListener("click", function(){ copyText(raw); });
+      div.appendChild(cp);
+    }
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    return div;
+  }
+  function aiChatMsg(role, text){ addMsg(role, text); }
+
+  var SUGGESTIONS = {
+    math: [
+      "Расскажи, как решать квадратные уравнения",
+      "Объясни разницу между НОД и НОК",
+      "Что такое производная простыми словами",
+      "Как считать проценты от числа"
+    ],
+    rus: [
+      "Когда пишется разделительный Ь, а когда Ъ?",
+      "Объясни спряжение глаголов",
+      "Какие бывают склонения имён существительных?",
+      "Как определить падеж имени существительного?"
+    ]
+  };
+  function buildSuggestions(){
+    var w = $("suggWrap"); w.innerHTML = "";
+    SUGGESTIONS[subjectNow].forEach(function(s){
+      var b = el("button", "sugg", s);
+      b.addEventListener("click", function(){ chatSendText(s); });
+      w.appendChild(b);
+    });
+    w.classList.toggle("hidden", chatHistory.length > 0);
+  }
+
+  function persistChat(){
+    if (chatHistory.length > 60) chatHistory = chatHistory.slice(-60);
+    try { localStorage.setItem("algChat", JSON.stringify(chatHistory)); } catch(e){}
+  }
+
+  function loadAI(){
+    try { cfg = JSON.parse(localStorage.getItem("algAI") || "{}"); } catch(e){ cfg = {}; }
+    if (cfg.baseUrl) $("aiBaseUrl").value = cfg.baseUrl;
+    if (cfg.apiKey) $("aiApiKey").value = cfg.apiKey;
+    if (cfg.model) $("aiModel").value = cfg.model;
+    try { chatHistory = JSON.parse(localStorage.getItem("algChat") || "[]") || []; } catch(e){ chatHistory = []; }
+    if (chatHistory.length > 30) chatHistory = chatHistory.slice(-30);
+    chatHistory.forEach(function(m){ if (m) addMsg(m.role === "assistant" ? "ai" : "user", m.content); });
+  }
+
+  function updateAIStatus(){
+    var el = $("aiStatus");
+    el.innerHTML = (nativeOK ? "Встроенный ИИ браузера: доступен" : "Встроенный ИИ браузера: не найден") + " · API: " + (cfg.apiKey || cfg.baseUrl ? "настроен (" + (cfg.model || "модель по умолчанию") + ")" : "ключ не указан");
+  }
+
+  function applyPreset(key){
+    var p = AI_PRESETS[key];
+    if (!p) return;
+    $("aiBaseUrl").value = p.url;
+    $("aiModel").value = p.model || "";
+    $("aiHint").innerHTML = p.hint;
+    var dl = $("aiModelList");
+    if (dl && AI_PRESET_MODELS[key] && AI_PRESET_MODELS[key].length){
+      dl.innerHTML = AI_PRESET_MODELS[key].map(function(m){ return "<option value=\"" + m + "\">"; }).join("");
+      $("aiModel").value = AI_PRESET_MODELS[key][0];
+    }
+    cfg.baseUrl = p.url;
+    cfg.model = $("aiModel").value;
+    try { localStorage.setItem("algAI", JSON.stringify(cfg)); } catch(e){}
+    updateAIStatus();
+  }
+  $("aiPreset").addEventListener("change", function(){ if (this.value) applyPreset(this.value); });
+
+  function tryNativeAI(){
+    return new Promise(function(resolve){
+      try {
+        var LM = (window.ai && window.ai.languageModel) || (window.navigator && navigator.ai && navigator.ai.languageModel);
+        if (!LM){ resolve(false); return; }
+        if (LM.capabilities){
+          var c = LM.capabilities();
+          if (c && typeof c.then === "function"){
+            c.then(function(caps){ resolve(!(!caps || caps.available === "unavailable" || caps.available === "no")); }, function(){ resolve(false); });
+          } else resolve(true);
+        } else resolve(true);
+      } catch(e){ resolve(false); }
+    });
+  }
+
+  function nativeChat(messages, system){
+    return new Promise(function(resolve, reject){
+      try {
+        var LM = (window.ai && window.ai.languageModel) || (navigator.ai && navigator.ai.languageModel);
+        if (!LM){ reject(new Error("Встроенный ИИ недоступен")); return; }
+        var history = messages.map(function(m){
+          return (m.role === "user" ? "Ученик: " : "Помощник: ") + m.content;
+        }).join("\n");
+        var fullPrompt = system + "\n\n" + history + "\n\nПомощник: ";
+        Promise.resolve(LM.create({ systemPrompt: system })).then(function(session){
+          if (!session || typeof session.prompt !== "function"){ reject(new Error("Сессия ИИ недоступна")); return; }
+          session.prompt(fullPrompt).then(resolve, reject);
+        }, reject);
+      } catch(e){ reject(e); }
+    });
+  }
+
+  function isGemini(){ return /generativelanguage\.googleapis\.com/.test(cfg.baseUrl || ""); }
+
+  function apiChat(system, messages){
+    if (isGemini()) return geminiChat(system, messages);
+    var url = cfg.baseUrl || "https://api.openai.com/v1/chat/completions";
+    if (!cfg.apiKey && !cfg.baseUrl) return Promise.reject(new Error("В настройках ИИ укажите ключ или URL"));
+    var headers = { "Content-Type": "application/json" };
+    if (cfg.apiKey) headers["Authorization"] = "Bearer " + cfg.apiKey;
+    var payload = {
+      model: cfg.model || "gpt-4o-mini",
+      temperature: 0.4,
+      messages: [{ role: "system", content: system }].concat(messages.map(function(m){ return { role: m.role, content: m.content }; }))
+    };
+    return fetch(url, { method: "POST", headers: headers, body: JSON.stringify(payload) })
+      .then(function(res){
+        if (!res.ok){ return res.text().then(function(t){ throw new Error("API " + res.status + ": " + String(t).slice(0, 200)); }); }
+        return res.json();
+      })
+      .then(function(data){
+        var text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (!text) throw new Error("API вернул пустой ответ");
+        return text;
+      });
+  }
+
+  function geminiChat(system, messages){
+    var model = cfg.model || "gemini-3.6-flash";
+    return geminiRequest(system, messages, model).catch(function(err){
+      var suggested = err && err.body && err.body.match(/models\/([a-zA-Z0-9.\-_:]+)/);
+      if (err && err.status === 404 && suggested){
+        var newModel = suggested[1];
+        if (newModel !== cfg.model){
+          cfg.model = newModel;
+          try { localStorage.setItem("algAI", JSON.stringify(cfg)); } catch(e){}
+          try { $("aiModel").value = newModel; } catch(e){}
+          return geminiRequest(system, messages, newModel);
+        }
+      }
+      if (err && err.raw) throw new Error("Gemini " + err.status + ": " + String(err.body).slice(0, 250));
+      throw err;
+    });
+  }
+
+  function geminiRequest(system, messages, model){
+    var key = (cfg.apiKey || "").trim();
+    if (!key) return Promise.reject(new Error("Для Gemini нужен ключ: бесплатно на aistudio.google.com/apikey. Вставьте его в поле «Ключ API»."));
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(key);
+    var contents = [];
+    for (var i = 0; i < messages.length; i++){
+      var m = messages[i];
+      if (!m || !m.content) continue;
+      if (i === 0 && m.role === "user" && m.content === "" && messages.length > 1) continue;
+      contents.push({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] });
+    }
+    var payload = { contents: contents };
+    if (system && system.trim()) payload.systemInstruction = { parts: [{ text: system }] };
+    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      .then(function(res){
+        if (!res.ok){ return res.text().then(function(t){ throw { status: res.status, body: t, raw: t }; }); }
+        return res.json();
+      })
+      .then(function(data){
+        var text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text;
+        if (!text) throw new Error("Gemini вернул пустой ответ");
+        return text;
+      });
+  }
+
+  function setBusy(b){
+    aiBusy = b;
+    $("chatSendBtn").disabled = b;
+    $("explainTopicBtn").disabled = b;
+    $("explainErrorBtn").disabled = b;
+    $("askAiBtn").disabled = b;
+  }
+
+  function askAI(system, userText){
+    if (aiBusy) return;
+    var msgs = chatHistory.length ? chatHistory.slice(-6) : [];
+    var userMsg = { role: "user", content: userText };
+    msgs.push(userMsg);
+    chatHistory.push(userMsg);
+    persistChat();
+    $("suggWrap").classList.add("hidden");
+    addMsg("user", userText);
+    var typingEl = addMsg("ai", "ИИ думает…", true);
+    setBusy(true);
+    var p = nativeOK ? nativeChat(msgs, system) : apiChat(system, msgs);
+    p.then(function(text){
+      typingEl.remove();
+      addMsg("ai", text);
+      chatHistory.push({ role: "assistant", content: text });
+      persistChat();
+    }).catch(function(err){
+      typingEl.remove();
+      var msg = err.message || "неизвестная ошибка";
+      addMsg("err", "Ошибка: " + msg);
+      if (!nativeOK){
+        if (/Authorization|401|403|ключ|key/i.test(msg)){
+          addMsg("err", "Проверьте ключ API: вставлен ли он в поле «Ключ API», без слова Bearer и лишних пробелов.");
+        } else if (/Failed to fetch|NetworkError|CORS/i.test(msg)){
+          addMsg("err", "Сеть/CORS: для внешнего ИИ лучше запускать файл на локальном сервере или использовать встроенный ИИ Chrome. Для локального Ollama/LM Studio убедитесь, что сервер запущен.");
+        } else if (/location|регион|supported/i.test(msg)){
+          addMsg("err", "Похоже на гео-блокировку провайдера (как у Gemini). Выберите в настройках вариант, который работает в вашем регионе: Ollama (локально), DeepSeek или GigaChat.");
+        } else {
+          addMsg("err", "Подсказка: у внешних API бывает ограничение CORS. Лучше использовать встроенный ИИ браузера (Chrome) либо локальный сервер (Ollama / LM Studio).");
+        }
+      }
+    }).then(function(){ setBusy(false); });
+  }
+
+  function chatSendText(text){
+    if (!text) return;
+    $("chatInput").value = "";
+    askAI(TUTOR_SYSTEM, text);
+  }
+
+  function chatSend(){
+    var text = $("chatInput").value.trim();
+    if (!text) return;
+    chatSendText(text);
+  }
+
+  function scrollToAIChat(){ var c = $("aiCard"); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }
+
+  function explainCurrentError(){
+    if (!lastWrongUser){ addMsg("err", "Сначала решите задание и получите ошибку."); return; }
+    var problemText = problemEl.innerText.replace(/\s+/g, " ").trim();
+    var correct = problemEl.getAttribute("data-answer");
+    if (curr.mode === "custom" && curr.customCurrent) correct = curr.customCurrent.answer;
+    var topicName = curr.mode === "custom" ? "Свои задания" : practiceTopicName();
+    var prompt = "Предмет: " + subjectName() + ". Ученик в тренажёре (класс: " + (curr.mode === "custom" ? "свои задания" : curr.grade) + ", тема: «" + topicName + "») ошибся.\nЗадание: " + problemText + "\nОтвет ученика: " + lastWrongUser + "\nПравильный ответ: " + correct + "\n\nОбъясни, где ошибка и как прийти к правильному ответу. По шагам, доброжелательно.";
+    lastWrongUser = null;
+    scrollToAIChat();
+    askAI(TUTOR_SYSTEM, prompt);
+  }
+
+  function helpCurrentProblem(){
+    var problemText = problemEl.innerText.replace(/\s+/g, " ").trim();
+    if (!problemText || /Выберите тему/.test(problemText)){ addMsg("err", "Сначала выберите тему в практике."); return; }
+    var topicName = curr.mode === "custom" ? "Свои задания" : practiceTopicName();
+    var prompt = "Предмет: " + subjectName() + ". Ученик решает задание в тренажёре (класс: " + (curr.mode === "custom" ? "свои задания" : curr.grade) + ", тема: «" + topicName + "»).\nЗадание: " + problemText + "\n\nПомоги решить, но НЕ называй готовый ответ. Дай подсказки и план решения по шагам, приведи похожий пример. В конце спроси, какой ответ получился у ученика.";
+    scrollToAIChat();
+    askAI(TUTOR_SYSTEM, prompt);
+  }
+
+  function explainCurrentTopic(){
+    var topicName, examples = "";
+    if (curr.mode === "custom"){
+      topicName = "Свои загруженные задания";
+    } else {
+      var list = subjectDB()[curr.grade];
+      if (!list || !list[curr.topic]){ addMsg("err", "Сначала выберите тему."); return; }
+      topicName = list[curr.topic].name;
+      var ex = [];
+      for (var i = 0; i < 3; i++){
+        var q = list[curr.topic].gen();
+        ex.push("— " + q.html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() + " → ответ: " + q.answer);
+      }
+      examples = "\n\nПримеры заданий из тренажёра:\n" + ex.join("\n");
+    }
+    var lvl = parseInt(curr.grade, 10) <= 4 ? " Объясняй максимально просто, для младшего школьника." : "";
+    var prompt = "Предмет: " + subjectName() + ". Класс: " + curr.grade + ". Тема: «" + topicName + "»." + examples + "\n\nОбъясни тему понятно: что это, зачем нужно, как решать. Приведи 2-3 своих примера." + lvl;
+    scrollToAIChat();
+    askAI(TUTOR_SYSTEM, prompt);
+  }
+
+  $("chatSendBtn").addEventListener("click", chatSend);
+  $("chatInput").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); chatSend(); } });
+  $("clearChatBtn").addEventListener("click", function(){ $("chatBody").querySelectorAll(".msg").forEach(function(m){ m.remove(); }); chatHistory = []; persistChat(); buildSuggestions(); });
+  $("explainTopicBtn").addEventListener("click", explainCurrentTopic);
+  $("explainErrorBtn").addEventListener("click", explainCurrentError);
+  $("askAiBtn").addEventListener("click", helpCurrentProblem);
+  $("randomTopicBtn").addEventListener("click", function(){
+    var list = subjectDB()[curr.grade];
+    if (!list || !list.length){ toast("В этом классе нет тем", "err"); return; }
+    selectTopic(ri(0, list.length - 1));
+  });
+  ["aiBaseUrl","aiApiKey","aiModel"].forEach(function(id){
+    $(id).addEventListener("input", function(){
+      cfg.baseUrl = $("aiBaseUrl").value.trim();
+      cfg.apiKey = $("aiApiKey").value.trim();
+      cfg.model = $("aiModel").value.trim();
+      try { localStorage.setItem("algAI", JSON.stringify(cfg)); } catch(e){}
+      updateAIStatus();
+    });
+  });
+
+  loadAI();
+  buildSuggestions();
+  tryNativeAI().then(function(ok){ nativeOK = ok; updateAIStatus(); });
+  updateAIStatus();
+
+  /* ================= ГЛОБАЛЬНЫЕ КЛАВИШИ ================= */
+  document.addEventListener("keydown", function(e){
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+    if (!trainerCard.classList.contains("hidden")){
+      if (e.key === "Enter" && answered){ e.preventDefault(); showNext(); }
+      if (e.key.toLowerCase() === "n") showNext();
+    }
+    var examRun = !$("tabExam").classList.contains("hidden") && !$("examCard").classList.contains("hidden");
+    if (examRun){
+      if (e.key.toLowerCase() === "n") examNext();
+      if (e.key.toLowerCase() === "b") examBack();
+    }
+  });
+
+  /* ================= ШАБЛОН ================= */
+  $("downloadTemplate").addEventListener("click", function(e){
+    e.preventDefault();
+    var sample = [
+      { "q": "x\u00b2 \u2212 9 = 0 (введите положительный корень)", "a": "3" },
+      { "q": "2x + 5 = 15", "a": "5" },
+      { "q": "Найдите НОД(12, 18)", "a": "6" },
+      { "q": "sin 30\u00b0", "a": "1/2" },
+      { "q": "Изложите своё решение текстом (открытое задание)" }
+    ];
+    var blob = new Blob([JSON.stringify(sample, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "moi-zadania.json";
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+
+  /* ================= СТАРТ ================= */
+  buildTopics();
+  generate();
+  updateExamBadge();
+  renderExamHistory();
+  updateExamBest();
+})();
+</script>
+</body>
+</html>
